@@ -1,7 +1,6 @@
 {
   "name": "seakebab-backend",
   "version": "1.0.0",
-  "description": "SEA KEBAB Partner Compliance Dashboard Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
