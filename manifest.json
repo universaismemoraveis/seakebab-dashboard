@@ -1,1 +1,37 @@
 
+{
+  "name": "SEA•KEBAB Partner Compliance",
+  "short_name": "SEA•KEBAB",
+  "description": "Surveillance de conformité des partenaires SEA•KEBAB sur les réseaux sociaux",
+  "start_url": "/app.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0d0703",
+  "theme_color": "#d4a800",
+  "orientation": "portrait-primary",
+  "lang": "fr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "Tableau de conformité",
+      "url": "/app.html",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
