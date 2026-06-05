@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEA•KEBAB — Partner Compliance System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#d4a800;--gold-light:#f0c030;--gold-dark:#9a7800;
+  --bg:#070503;--bg2:#0f0a04;--bg3:#17100a;
+  --text:#e8dcc8;--text-muted:#8a7a65;--text-dim:#4a3d2e;
+  --silver:#b8b8c8;--platinum:#d0d0ff;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+.cursor{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(212,168,0,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease}
+
+/* NOISE TEXTURE */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:1;opacity:.4}
+
+/* LINES DÉCO */
+.lines{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.line{position:absolute;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent 0%,rgba(212,168,0,.06) 30%,rgba(212,168,0,.06) 70%,transparent 100%)}
+.line:nth-child(1){left:16.66%}.line:nth-child(2){left:33.33%}.line:nth-child(3){left:50%}.line:nth-child(4){left:66.66%}.line:nth-child(5){left:83.33%}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 60px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(7,5,3,.9) 0%,transparent 100%);backdrop-filter:blur(2px)}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.nav-logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--gold-dark),var(--gold-light));border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#1a0800;letter-spacing:0}
+.nav-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.15em;color:#fff}
+.nav-name span{color:var(--gold)}
+.nav-links{display:flex;gap:36px;align-items:center}
+.nav-links a{color:var(--text-muted);font-size:12px;text-decoration:none;letter-spacing:.12em;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{padding:10px 22px;background:transparent;border:1px solid var(--gold);border-radius:3px;color:var(--gold);font-size:11px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;transition:all .3s;font-family:'DM Sans',sans-serif}
+.nav-cta:hover{background:var(--gold);color:#1a0800}
+
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:120px 40px 80px;overflow:hidden;z-index:2}
+.hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(212,168,0,.08) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid rgba(212,168,0,.25);border-radius:2px;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:32px;animation:fadeUp .8s ease both}
+.hero-tag::before{content:'';width:20px;height:1px;background:var(--gold)}
+.hero-tag::after{content:'';width:20px;height:1px;background:var(--gold)}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,140px);line-height:.92;letter-spacing:.02em;margin-bottom:24px;animation:fadeUp .8s .1s ease both}
+.hero-title em{font-style:normal;color:var(--gold);display:block}
+.hero-title span{color:var(--text-dim)}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,26px);color:var(--text-muted);font-style:italic;max-width:700px;margin:0 auto 48px;line-height:1.6;animation:fadeUp .8s .2s ease both}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .3s ease both}
+.btn-primary{padding:16px 40px;background:linear-gradient(135deg,var(--gold-dark),var(--gold-light));color:#1a0800;font-weight:700;font-size:13px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all .3s;border:none;cursor:none}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,168,0,.3)}
+.btn-secondary{padding:16px 40px;background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--text-muted);font-size:13px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all .3s}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+.hero-scroll{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadeUp .8s .5s ease both}
+.hero-scroll span{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim)}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollDown 2s infinite}
+@keyframes scrollDown{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
+
+/* STATS BAR */
+.stats{position:relative;z-index:2;border-top:1px solid rgba(212,168,0,.1);border-bottom:1px solid rgba(212,168,0,.1);background:rgba(212,168,0,.03);padding:40px 60px;display:flex;justify-content:center;gap:0}
+.stat{flex:1;max-width:200px;text-align:center;position:relative}
+.stat+.stat::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:40px;width:1px;background:rgba(212,168,0,.15)}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold);line-height:1;letter-spacing:.05em}
+.stat-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-top:4px}
+
+/* SECTIONS */
+section{position:relative;z-index:2;padding:120px 60px}
+.section-tag{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.section-tag::before{content:'';width:30px;height:1px;background:var(--gold)}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,6vw,80px);line-height:.95;letter-spacing:.02em;margin-bottom:24px}
+.section-body{font-size:16px;color:var(--text-muted);line-height:1.8;max-width:560px}
+.max{max-width:1200px;margin:0 auto}
+
+/* MANIFESTO */
+.manifesto{background:var(--bg2)}
+.manifesto-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.manifesto-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,42px);font-style:italic;line-height:1.4;color:var(--text);position:relative;padding-left:32px}
+.manifesto-quote::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--gold),transparent)}
+.manifesto-text p{margin-bottom:16px}
+
+/* THREE PILLARS */
+.pillars{background:var(--bg)}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:60px}
+.pillar{padding:48px 36px;position:relative;overflow:hidden;transition:all .4s}
+.pillar::before{content:'';position:absolute;inset:0;background:var(--bg3);z-index:0;transition:transform .4s}
+.pillar:hover::before{transform:scaleY(1.02)}
+.pillar-content{position:relative;z-index:1}
+.pillar-num{font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(212,168,0,.1);line-height:1;margin-bottom:24px;transition:color .4s}
+.pillar:hover .pillar-num{color:rgba(212,168,0,.2)}
+.pillar-icon{font-size:28px;margin-bottom:20px}
+.pillar-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;margin-bottom:16px;color:#fff}
+.pillar-body{font-size:14px;color:var(--text-muted);line-height:1.8}
+.pillar-divider{width:30px;height:2px;background:var(--gold);margin:20px 0}
+.pillar-points{list-style:none;margin-top:16px}
+.pillar-points li{font-size:13px;color:var(--text-muted);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:8px}
+.pillar-points li::before{content:'→';color:var(--gold);font-size:11px;flex-shrink:0}
+
+/* GRADES */
+.grades{background:var(--bg2);overflow:hidden}
+.grades-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:80px}
+.grades-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.grade-card{padding:48px 36px;position:relative;overflow:hidden;cursor:none}
+.grade-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.grade-silver::after{background:linear-gradient(to right,var(--silver),transparent)}
+.grade-gold::after{background:linear-gradient(to right,var(--gold),transparent)}
+.grade-platinum::after{background:linear-gradient(to right,var(--platinum),transparent)}
+.grade-bg{position:absolute;inset:0;z-index:0;transition:opacity .4s}
+.grade-silver .grade-bg{background:radial-gradient(ellipse at top left,rgba(184,184,200,.05) 0%,transparent 70%)}
+.grade-gold .grade-bg{background:radial-gradient(ellipse at top left,rgba(212,168,0,.08) 0%,transparent 70%)}
+.grade-platinum .grade-bg{background:radial-gradient(ellipse at top left,rgba(184,184,255,.08) 0%,transparent 70%)}
+.grade-card:hover .grade-bg{opacity:2}
+.grade-content{position:relative;z-index:1}
+.grade-icon{font-size:36px;margin-bottom:20px;display:block}
+.grade-name{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.05em;margin-bottom:8px}
+.grade-silver .grade-name{color:var(--silver)}
+.grade-gold .grade-name{color:var(--gold)}
+.grade-platinum .grade-name{color:var(--platinum)}
+.grade-tagline{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--text-muted);margin-bottom:28px}
+.grade-obligations{list-style:none}
+.grade-obligations li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;color:var(--text-muted);display:flex;justify-content:space-between;align-items:center;gap:16px}
+.grade-obligations li span{font-weight:500;color:var(--text)}
+.grade-obligations strong{font-family:'Bebas Neue',sans-serif;font-size:18px}
+.grade-silver .grade-obligations strong{color:var(--silver)}
+.grade-gold .grade-obligations strong{color:var(--gold)}
+.grade-platinum .grade-obligations strong{color:var(--platinum)}
+
+/* SCORING */
+.scoring{background:var(--bg);padding:120px 60px}
+.scoring-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:60px}
+.score-visual{position:relative}
+.score-rings{display:flex;flex-direction:column;gap:16px}
+.score-item{display:grid;grid-template-columns:160px 1fr 48px;align-items:center;gap:20px}
+.score-name{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+.score-bar-wrap{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.score-bar{height:100%;border-radius:2px;position:relative;overflow:hidden}
+.score-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.score-pts{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);text-align:right}
+.score-status{display:flex;flex-direction:column;gap:12px;margin-top:40px}
+.status-item{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:4px}
+.status-conforme{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15)}
+.status-partial{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15)}
+.status-nc{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15)}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.status-conforme .status-dot{background:#22c55e}
+.status-partial .status-dot{background:#f59e0b}
+.status-nc .status-dot{background:#ef4444}
+.status-label{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.05em}
+.status-conforme .status-label{color:#22c55e}
+.status-partial .status-label{color:#f59e0b}
+.status-nc .status-label{color:#ef4444}
+.status-desc{font-size:12px;color:var(--text-muted)}
+
+/* CHARTER */
+.charter{background:var(--bg2)}
+.charter-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.charter-list{list-style:none;margin-top:32px}
+.charter-list li{padding:18px 0;border-bottom:1px solid rgba(212,168,0,.08);display:flex;gap:20px;align-items:flex-start;opacity:0;animation:fadeUp .6s ease forwards}
+.charter-list li:nth-child(1){animation-delay:.1s}
+.charter-list li:nth-child(2){animation-delay:.2s}
+.charter-list li:nth-child(3){animation-delay:.3s}
+.charter-list li:nth-child(4){animation-delay:.4s}
+.charter-list li:nth-child(5){animation-delay:.5s}
+.charter-list li:nth-child(6){animation-delay:.6s}
+.charter-num{font-family:'Bebas Neue',sans-serif;font-size:32px;color:rgba(212,168,0,.3);line-height:1;flex-shrink:0;width:36px}
+.charter-text strong{display:block;font-size:14px;color:var(--text);margin-bottom:4px}
+.charter-text p{font-size:13px;color:var(--text-muted);line-height:1.6}
+.charter-cta{margin-top:40px;padding:32px;background:rgba(212,168,0,.05);border:1px solid rgba(212,168,0,.15);border-radius:4px}
+.charter-cta p{font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:20px}
+.charter-cta strong{color:var(--gold)}
+
+/* EXCLUSION */
+.exclusion{background:var(--bg);padding:80px 60px}
+.exclusion-inner{max-width:900px;margin:0 auto;text-align:center}
+.exclusion-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,52px);font-style:italic;line-height:1.3;margin-bottom:24px;color:var(--text)}
+.exclusion-title strong{font-style:normal;color:var(--gold);display:block}
+.exclusion-body{font-size:15px;color:var(--text-muted);line-height:1.9;max-width:680px;margin:0 auto 48px}
+.exclusion-levels{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:40px}
+.level-card{padding:32px 24px;background:var(--bg3);text-align:left}
+.level-icon{font-size:24px;margin-bottom:14px}
+.level-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:#fff;margin-bottom:8px}
+.level-desc{font-size:12px;color:var(--text-muted);line-height:1.7}
+
+/* FINAL CTA */
+.final-cta{background:linear-gradient(135deg,#0f0a04 0%,#1a1004 50%,#0f0a04 100%);padding:140px 60px;text-align:center;position:relative;overflow:hidden}
+.final-cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;background:radial-gradient(ellipse,rgba(212,168,0,.06) 0%,transparent 70%);pointer-events:none}
+.final-cta-content{position:relative;z-index:1}
+.final-cta-pre{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--gold);margin-bottom:24px}
+.final-cta-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,8vw,100px);line-height:.95;letter-spacing:.02em;margin-bottom:32px}
+.final-cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:48px}
+
+/* FOOTER */
+footer{border-top:1px solid rgba(212,168,0,.1);padding:40px 60px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em}
+.footer-logo span{color:var(--gold)}
+.footer-copy{font-size:11px;color:var(--text-dim);letter-spacing:.08em}
+.footer-version{font-size:11px;color:var(--text-dim);padding:4px 10px;border:1px solid rgba(212,168,0,.1);border-radius:20px}
+
+/* REVEAL ANIMATION */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(to right,transparent,rgba(212,168,0,.2),transparent);margin:0 60px}
+
+@media(max-width:900px){
+  nav{padding:20px 24px}.nav-links{display:none}
+  section{padding:80px 24px}
+  .manifesto-grid,.grades-intro,.scoring-grid,.charter-grid{grid-template-columns:1fr}
+  .pillars-grid,.grades-cards,.exclusion-levels{grid-template-columns:1fr}
+  .stats{padding:40px 24px;flex-wrap:wrap}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:30px 24px}
+  .hero{padding:100px 24px 80px}
+  .final-cta{padding:80px 24px}
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="lines"><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">S</div>
+    <div class="nav-name">SEA<span>•</span>KEBAB</div>
+  </div>
+  <div class="nav-links">
+    <a href="#manifesto">La Vision</a>
+    <a href="#pillars">Les Acteurs</a>
+    <a href="#grades">Les Grades</a>
+    <a href="#charter">La Charte</a>
+  </div>
+  <a href="index.html" class="nav-cta">Accéder au Dashboard</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-glow"></div>
+  <div>
+    <div class="hero-tag">Partner Compliance System</div>
+    <h1 class="hero-title">
+      L'EXCELLENCE<br>
+      <em>N'EST PAS</em><br>
+      <span>UN HASARD</span>
+    </h1>
+    <p class="hero-sub">
+      Le système qui transforme chaque partenaire SEA•KEBAB en ambassadeur de marque irréprochable — et qui protège le réseau des acteurs qui ne méritent pas d'en faire partie.
+    </p>
+    <div class="hero-actions">
+      <a href="index.html" class="btn-primary">Accéder au Dashboard</a>
+      <a href="#manifesto" class="btn-secondary">Découvrir le système</a>
+    </div>
+  </div>
+  <div class="hero-scroll">
+    <span>Défiler</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat reveal"><div class="stat-num">3</div><div class="stat-label">Grades de partenariat</div></div>
+  <div class="stat reveal reveal-delay-1"><div class="stat-num">5</div><div class="stat-label">Critères de conformité</div></div>
+  <div class="stat reveal reveal-delay-2"><div class="stat-num">3</div><div class="stat-label">Réseaux surveillés</div></div>
+  <div class="stat reveal reveal-delay-3"><div class="stat-num">100</div><div class="stat-label">Points de score max</div></div>
+</div>
+
+<div class="divider"></div>
+
+<!-- MANIFESTO -->
+<section class="manifesto" id="manifesto">
+  <div class="max">
+    <div class="manifesto-grid">
+      <div>
+        <div class="section-tag">La Vision</div>
+        <h2 class="section-title reveal">UN RÉSEAU QUI NE TOLÈRE QUE L'EXCELLENCE</h2>
+        <blockquote class="manifesto-quote reveal reveal-delay-1">
+          "Être partenaire SEA•KEBAB, ce n'est pas un titre. C'est un engagement quotidien envers une marque, des clients et des standards qui ne souffrent aucun compromis."
+        </blockquote>
+      </div>
+      <div class="manifesto-text reveal reveal-delay-2">
+        <div class="section-tag">Pourquoi ce système</div>
+        <p class="section-body">SEA•KEBAB a bâti son positionnement sur un triptyque : <strong style="color:var(--text)">qualité du produit, force de la marque, engagement des partenaires</strong>. Les deux premiers piliers dépendent de l'enseigne. Le troisième dépend du réseau.</p>
+        <br>
+        <p class="section-body">Ce système de compliance existe pour une raison simple : <strong style="color:var(--gold)">vous ne pouvez pas construire une marque premium avec des partenaires qui n'en respectent pas les codes.</strong> Chaque post non publié, chaque tag manquant, chaque repost oublié érode l'image collective.</p>
+        <br>
+        <p class="section-body">Le SEA•KEBAB Partner Compliance Dashboard n'est pas un outil de surveillance. C'est un <strong style="color:var(--text)">système de protection de la valeur</strong> — pour la marque, pour les partenaires exemplaires, pour les grossistes qui investissent dans ce réseau.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- PILLARS -->
+<section class="pillars" id="pillars">
+  <div class="max">
+    <div class="section-tag reveal">Les trois acteurs</div>
+    <h2 class="section-title reveal">QUI BÉNÉFICIE<br>DE CE SYSTÈME ?</h2>
+    <div class="pillars-grid">
+
+      <!-- MARQUE -->
+      <div class="pillar reveal">
+        <div class="pillar-content">
+          <div class="pillar-num">01</div>
+          <div class="pillar-icon">🏷️</div>
+          <h3 class="pillar-title">La Marque SEA•KEBAB</h3>
+          <div class="pillar-divider"></div>
+          <p class="pillar-body">SEA•KEBAB investit dans sa notoriété, son image, ses codes visuels et son positionnement premium. Chaque partenaire est un relais de cette identité sur les réseaux sociaux. Sans contrôle, cette image se dilue, se dégrade, se contredit.</p>
+          <ul class="pillar-points">
+            <li>Visibilité de marque uniforme et maîtrisée sur tous les réseaux</li>
+            <li>Protection de l'identité visuelle et des codes de communication</li>
+            <li>Amplification organique via les comptes partenaires actifs</li>
+            <li>Preuve de qualité du réseau face aux prospects et investisseurs</li>
+            <li>Outil d'exclusion des partenaires nuisibles à la marque</li>
+            <li>Tableau de bord en temps réel pour décisions commerciales rapides</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- PARTENAIRES -->
+      <div class="pillar reveal reveal-delay-1">
+        <div class="pillar-content">
+          <div class="pillar-num">02</div>
+          <div class="pillar-icon">🍖</div>
+          <h3 class="pillar-title">Les Partenaires Restaurants</h3>
+          <div class="pillar-divider"></div>
+          <p class="pillar-body">Un restaurant partenaire SEA•KEBAB bénéficie d'une marque forte, d'un réseau qualifié et d'une visibilité renforcée. En contrepartie, il s'engage à promouvoir activement cette marque. Ce système récompense les partenaires sérieux et pénalise les passagers clandestins.</p>
+          <ul class="pillar-points">
+            <li>Accès à la notoriété et au positionnement premium de SEA•KEBAB</li>
+            <li>Visibilité dans le réseau national des partenaires certifiés</li>
+            <li>Support marketing, contenus et assets visuels fournis</li>
+            <li>Score de performance visible et améliorable chaque mois</li>
+            <li>Montée en grade = accès à plus d'avantages et de visibilité</li>
+            <li>Transparence totale sur les obligations contractuelles</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- GROSSISTES -->
+      <div class="pillar reveal reveal-delay-2">
+        <div class="pillar-content">
+          <div class="pillar-num">03</div>
+          <div class="pillar-icon">🚛</div>
+          <h3 class="pillar-title">Les Grossistes & Distributeurs</h3>
+          <div class="pillar-divider"></div>
+          <p class="pillar-body">Les grossistes qui s'associent à SEA•KEBAB ont besoin de s'appuyer sur un réseau fiable et actif. Ce système leur garantit que les partenaires qu'ils approvisionnent sont des acteurs engagés, visibles et conformes — et non des restaurants dormants qui ne font pas rayonner la marque.</p>
+          <ul class="pillar-points">
+            <li>Réseau qualifié d'enseignes actives et visibles en ligne</li>
+            <li>Ciblage des partenaires par grade pour offres préférentielles</li>
+            <li>Preuve de sérieux du réseau pour négociations commerciales</li>
+            <li>Remontée d'informations sur les partenaires performants</li>
+            <li>Base de données structurée pour actions marketing B2B</li>
+            <li>Valorisation des investissements distribution via la conformité</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GRADES -->
+<section class="grades" id="grades">
+  <div class="max">
+    <div class="grades-intro">
+      <div>
+        <div class="section-tag reveal">Le système de grades</div>
+        <h2 class="section-title reveal">TROIS NIVEAUX.<br>UN SEUL STANDARD.</h2>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <p class="section-body">Le grade d'un partenaire n'est pas une distinction honorifique. C'est le reflet de son engagement réel, mesuré chaque mois sur trois plateformes, selon cinq critères objectifs. Il se gagne, il se maintient, il se perd.</p>
+      </div>
+    </div>
+    <div class="grades-cards">
+
+      <div class="grade-card grade-silver reveal">
+        <div class="grade-bg"></div>
+        <div class="grade-content">
+          <span class="grade-icon">◆</span>
+          <div class="grade-name">Silver</div>
+          <div class="grade-tagline">Le point d'entrée dans le réseau SEA•KEBAB</div>
+          <ul class="grade-obligations">
+            <li>Posts originaux / mois<span><strong>4</strong> min.</span></li>
+            <li>Reposts / mois<span><strong>2</strong> min.</span></li>
+            <li>Republications / mois<span><strong>1</strong> min.</span></li>
+            <li>Score qualité minimum<span><strong>60</strong>/100</span></li>
+            <li>Tag SEA•KEBAB<span><strong>Obligatoire</strong></span></li>
+          </ul>
+          <div style="margin-top:24px;padding:12px;background:rgba(184,184,200,.05);border-left:2px solid var(--silver);font-size:12px;color:var(--text-muted);line-height:1.6">
+            Niveau d'accès au réseau. Les partenaires Silver bénéficient du socle des avantages SEA•KEBAB et ont 90 jours pour consolider leur engagement.
+          </div>
+        </div>
+      </div>
+
+      <div class="grade-card grade-gold reveal reveal-delay-1">
+        <div class="grade-bg"></div>
+        <div class="grade-content">
+          <span class="grade-icon">★</span>
+          <div class="grade-name">Gold</div>
+          <div class="grade-tagline">L'engagement confirmé, la visibilité renforcée</div>
+          <ul class="grade-obligations">
+            <li>Posts originaux / mois<span><strong>8</strong> min.</span></li>
+            <li>Reposts / mois<span><strong>4</strong> min.</span></li>
+            <li>Republications / mois<span><strong>2</strong> min.</span></li>
+            <li>Score qualité minimum<span><strong>70</strong>/100</span></li>
+            <li>Tag SEA•KEBAB<span><strong>Obligatoire</strong></span></li>
+          </ul>
+          <div style="margin-top:24px;padding:12px;background:rgba(212,168,0,.05);border-left:2px solid var(--gold);font-size:12px;color:var(--text-muted);line-height:1.6">
+            Partenaire actif et engagé. Les partenaires Gold sont mis en avant dans les communications SEA•KEBAB et bénéficient d'avantages distributeurs préférentiels.
+          </div>
+        </div>
+      </div>
+
+      <div class="grade-card grade-platinum reveal reveal-delay-2">
+        <div class="grade-bg"></div>
+        <div class="grade-content">
+          <span class="grade-icon">✦</span>
+          <div class="grade-name">Platinum</div>
+          <div class="grade-tagline">L'excellence absolue, le sommet du réseau</div>
+          <ul class="grade-obligations">
+            <li>Posts originaux / mois<span><strong>12</strong> min.</span></li>
+            <li>Reposts / mois<span><strong>6</strong> min.</span></li>
+            <li>Republications / mois<span><strong>3</strong> min.</span></li>
+            <li>Score qualité minimum<span><strong>80</strong>/100</span></li>
+            <li>Tag SEA•KEBAB<span><strong>Obligatoire</strong></span></li>
+          </ul>
+          <div style="margin-top:24px;padding:12px;background:rgba(184,184,255,.05);border-left:2px solid var(--platinum);font-size:12px;color:var(--text-muted);line-height:1.6">
+            Ambassadeur de marque premium. Les partenaires Platinum sont les vitrines du réseau SEA•KEBAB et accèdent aux programmes exclusifs de co-marketing et de développement.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SCORING -->
+<section class="scoring" id="scoring">
+  <div class="max">
+    <div class="section-tag reveal">Le calcul du score</div>
+    <h2 class="section-title reveal">UN SCORE.<br>CINQ VÉRITÉS.</h2>
+    <div class="scoring-grid">
+      <div>
+        <p class="section-body reveal">Le score de conformité est calculé automatiquement, chaque mois, sur la base de cinq critères objectifs et pondérés. Aucune subjectivité. Aucun favoritisme. Juste les faits.</p>
+        <div class="score-status" style="margin-top:40px">
+          <div class="status-item status-conforme reveal">
+            <div class="status-dot"></div>
+            <div>
+              <div class="status-label">Conforme — 80 à 100</div>
+              <div class="status-desc">Le partenaire respecte l'intégralité de ses obligations. Son grade est maintenu et sécurisé.</div>
+            </div>
+          </div>
+          <div class="status-item status-partial reveal reveal-delay-1">
+            <div class="status-dot"></div>
+            <div>
+              <div class="status-label">Partiel — 60 à 79</div>
+              <div class="status-desc">Le partenaire respecte partiellement ses engagements. Mise en demeure formelle. 60 jours pour se redresser.</div>
+            </div>
+          </div>
+          <div class="status-item status-nc reveal reveal-delay-2">
+            <div class="status-dot"></div>
+            <div>
+              <div class="status-label">Non conforme — 0 à 59</div>
+              <div class="status-desc">Manquement grave aux obligations contractuelles. Procédure de déclassement ou d'exclusion du réseau engagée.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="score-rings reveal reveal-delay-1">
+        <div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:24px">Pondération des critères</div>
+        <div class="score-item">
+          <div class="score-name">Posts originaux</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:25%;background:linear-gradient(to right,#E1306C,#f06090)"></div></div>
+          <div class="score-pts">25 pts</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">Score qualité</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:25%;background:linear-gradient(to right,var(--gold-dark),var(--gold-light))"></div></div>
+          <div class="score-pts">25 pts</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">Reposts</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:20%;background:linear-gradient(to right,#69C9D0,#80dde0)"></div></div>
+          <div class="score-pts">20 pts</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">Republications</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:15%;background:linear-gradient(to right,#1877F2,#4090f8)"></div></div>
+          <div class="score-pts">15 pts</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">Taux de tagging</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:15%;background:linear-gradient(to right,#818cf8,#a0a8ff)"></div></div>
+          <div class="score-pts">15 pts</div>
+        </div>
+        <div style="margin-top:32px;padding:20px;background:rgba(212,168,0,.04);border:1px solid rgba(212,168,0,.1);border-radius:4px">
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.8">
+            Chaque critère est calculé par rapport aux <strong style="color:var(--text)">obligations propres au grade</strong> du partenaire. Un score de 80/100 pour un partenaire Platinum représente un niveau d'engagement bien supérieur à 80/100 pour un partenaire Silver.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CHARTER -->
+<section class="charter" id="charter">
+  <div class="max">
+    <div class="charter-grid">
+      <div>
+        <div class="section-tag reveal">La charte partenaire</div>
+        <h2 class="section-title reveal">6 RÈGLES.<br>AUCUNE EXCEPTION.</h2>
+        <ul class="charter-list">
+          <li>
+            <div class="charter-num">01</div>
+            <div class="charter-text">
+              <strong>Publication régulière et conforme</strong>
+              <p>Le partenaire s'engage à publier le nombre minimum de posts requis par son grade chaque mois, sur les plateformes déclarées, avec un contenu en accord avec les standards SEA•KEBAB.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">02</div>
+            <div class="charter-text">
+              <strong>Tagging systématique de la marque</strong>
+              <p>Chaque publication doit inclure le tag officiel @seakebab. Ce tag n'est pas optionnel — il est la signature visible de l'appartenance au réseau et garantit la traçabilité de la communication.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">03</div>
+            <div class="charter-text">
+              <strong>Relais des communications officielles</strong>
+              <p>Le partenaire s'engage à reposter et republier les communications SEA•KEBAB conformément aux quotas de son grade. Il devient un amplificateur de la marque, pas seulement un bénéficiaire.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">04</div>
+            <div class="charter-text">
+              <strong>Maintien d'un niveau de qualité</strong>
+              <p>Les publications doivent atteindre le score qualité minimum requis par le grade. La qualité est évaluée sur l'engagement généré (likes, commentaires), le respect des codes visuels et l'authenticité du contenu.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">05</div>
+            <div class="charter-text">
+              <strong>Transparence et reporting mensuel</strong>
+              <p>Le partenaire fournit ou autorise la collecte de ses métriques sociales chaque mois. Aucune opacité n'est tolérée. Un partenaire qui refuse la transparence est traité comme un partenaire non conforme.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">06</div>
+            <div class="charter-text">
+              <strong>Respect de l'éthique de marque</strong>
+              <p>Toute publication contraire aux valeurs de SEA•KEBAB, susceptible de ternir l'image de la marque ou du réseau, entraîne une procédure immédiate indépendamment du score de conformité.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div class="charter-cta reveal">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;color:var(--gold);margin-bottom:16px">Conséquences du non-respect</div>
+          <p>Un partenaire dont le score reste <strong>en dessous de 60</strong> pendant deux mois consécutifs entre automatiquement en procédure de déclassement.</p>
+          <p>Un partenaire dont le score reste <strong>en dessous de 40</strong> pendant un seul mois peut faire l'objet d'une procédure d'exclusion immédiate du réseau SEA•KEBAB.</p>
+          <p>Le déclassement est visible dans le dashboard. Il est communiqué formellement au grossiste principal du partenaire concerné.</p>
+          <p>Un partenaire exclu perd l'accès à la marque, aux assets visuels, aux avantages distributeurs et à toute référence commerciale SEA•KEBAB.</p>
+        </div>
+        <div class="reveal reveal-delay-1" style="margin-top:24px;padding:24px;border:1px solid rgba(212,168,0,.1);border-radius:4px">
+          <div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Note importante</div>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.8">Ce système ne cherche pas à exclure — il cherche à élever. Un partenaire non conforme est d'abord accompagné. L'exclusion est le dernier recours, pour les cas où l'engagement est fondamentalement absent.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- EXCLUSION STATEMENT -->
+<section class="exclusion">
+  <div class="exclusion-inner">
+    <h2 class="exclusion-title reveal">
+      Ce dashboard répond à une question simple.
+      <strong>"Ce partenaire mérite-t-il d'être dans le réseau SEA•KEBAB ?"</strong>
+    </h2>
+    <p class="exclusion-body reveal">La réponse n'est jamais subjective. Elle est dans les chiffres, dans les posts, dans les tags, dans le score. Ce système transforme une décision commerciale difficile en un fait objectif et incontestable. C'est l'arme la plus propre qu'une marque puisse avoir.</p>
+    <div class="exclusion-levels reveal">
+      <div class="level-card">
+        <div class="level-icon">✅</div>
+        <div class="level-title">Partenaire Actif</div>
+        <div class="level-desc">Score ≥ 80. Respecte ses obligations. Contribue à la marque. Mérite son grade et ses avantages. À mettre en avant.</div>
+      </div>
+      <div class="level-card">
+        <div class="level-icon">⚠️</div>
+        <div class="level-title">Partenaire à Risque</div>
+        <div class="level-desc">Score 60-79. Engage partiellement. Bénéficie des avantages sans contribuer pleinement. 60 jours pour se redresser.</div>
+      </div>
+      <div class="level-card">
+        <div class="level-icon">❌</div>
+        <div class="level-title">Partenaire Inacceptable</div>
+        <div class="level-desc">Score &lt; 60. N'honore pas ses engagements. Nuit à la marque par son inaction. Procédure d'exclusion engagée.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-content">
+    <div class="final-cta-pre reveal">Votre réseau vous attend.</div>
+    <h2 class="final-cta-title reveal">ACCÉDEZ AU<br><span style="color:var(--gold)">DASHBOARD</span></h2>
+    <p class="section-body reveal" style="max-width:600px;margin:0 auto;text-align:center;color:var(--text-muted)">Visualisez en temps réel la conformité de chaque partenaire. Identifiez les ambassadeurs. Déclassez les passagers clandestins. Protégez ce que vous avez construit.</p>
+    <div class="final-cta-actions reveal">
+      <a href="index.html" class="btn-primary">Connexion au Dashboard →</a>
+    </div>
+    <div class="reveal" style="margin-top:60px;display:flex;justify-content:center;gap:48px;flex-wrap:wrap">
+      <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)">Instagram</div><div style="font-size:11px;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase">Surveillé</div></div>
+      <div style="width:1px;background:rgba(212,168,0,.1)"></div>
+      <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)">TikTok</div><div style="font-size:11px;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase">Surveillé</div></div>
+      <div style="width:1px;background:rgba(212,168,0,.1)"></div>
+      <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)">Facebook</div><div style="font-size:11px;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase">Surveillé</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">SEA<span>•</span>KEBAB</div>
+  <div class="footer-copy">Partner Compliance System — Confidentiel réseau</div>
+  <div class="footer-version">v2.1.0</div>
+</footer>
+
+<script>
+// Cursor
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+animRing();
+document.querySelectorAll('a,button,[class*="pillar"],[class*="grade-card"]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='16px';cursor.style.height='16px';ring.style.width='50px';ring.style.height='50px';ring.style.borderColor='rgba(212,168,0,.6)';});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='8px';cursor.style.height='8px';ring.style.width='32px';ring.style.height='32px';ring.style.borderColor='rgba(212,168,0,.4)';});
+});
+
+// Scroll reveal
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth'});
+  });
+});
+
+// Parallax subtle
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  const glow=document.querySelector('.hero-glow');
+  if(glow)glow.style.transform=`translate(-50%, calc(-50% + ${y*.1}px))`;
+});
+</script>
+</body>
+</html>
