@@ -775,5 +775,6 @@ function saveSeForm(){
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!state.auth)doLogin();});
 if(state.auth){loadData();}else{render();}
 </script>
+  <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('/sw.js');}</script>
 </body>
 </html>
