@@ -1,775 +1,688 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>SEA•KEBAB Partner Compliance</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SEA•KEBAB — Partner Compliance System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
+:root{
+  --gold:#d4a800;--gold-light:#f0c030;--gold-dark:#9a7800;
+  --bg:#070503;--bg2:#0f0a04;--bg3:#17100a;
+  --text:#e8dcc8;--text-muted:#8a7a65;--text-dim:#4a3d2e;
+  --silver:#b8b8c8;--platinum:#d0d0ff;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:#0d0703;font-family:system-ui,sans-serif;color:#e8dcc8;min-height:100vh}
-::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(212,168,0,.3);border-radius:4px}
-input:focus,select:focus,textarea:focus{outline:none;border-color:rgba(200,150,20,.5)!important}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;overflow-x:hidden;cursor:none}
 
-/* TOOLTIP */
-[data-tip]{position:relative;cursor:help}
-[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;transform:translateX(-50%);background:#1a1008;border:1px solid rgba(212,168,0,.3);color:#e8dcc8;padding:6px 10px;border-radius:7px;font-size:11px;white-space:nowrap;z-index:999;pointer-events:none;box-shadow:0 8px 24px rgba(0,0,0,.5)}
-[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 1px);left:50%;transform:translateX(-50%);border:5px solid transparent;border-top-color:rgba(212,168,0,.3);z-index:999}
+/* CURSOR */
+.cursor{position:fixed;width:8px;height:8px;background:var(--gold);border-radius:50%;pointer-events:none;z-index:9999;transform:translate(-50%,-50%);transition:width .2s,height .2s,opacity .2s}
+.cursor-ring{position:fixed;width:32px;height:32px;border:1px solid rgba(212,168,0,.4);border-radius:50%;pointer-events:none;z-index:9998;transform:translate(-50%,-50%);transition:all .12s ease}
 
-/* LOGIN */
-.lw{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#1e0e02 0%,#0d0703 70%)}
-.lb{background:rgba(255,255,255,.03);border:1px solid rgba(212,168,0,.3);border-radius:16px;padding:36px;width:380px;box-shadow:0 32px 80px rgba(0,0,0,.6)}
-.li{width:100%;padding:10px 12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:8px;color:#fff;font-size:14px;font-family:inherit;margin-top:6px}
-.lbtn{width:100%;padding:13px;background:linear-gradient(135deg,#c8860a,#f0a500);border:none;border-radius:9px;color:#1a0800;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;margin-top:14px}
-.lerr{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:10px 12px;color:#ef4444;font-size:12px;margin-bottom:14px;display:none}
+/* NOISE TEXTURE */
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");pointer-events:none;z-index:1;opacity:.4}
 
-/* ROLE BADGES */
-.rb{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
-.ra{background:rgba(212,168,0,.15);color:#d4a800;border:1px solid rgba(212,168,0,.3)}
-.rv{background:rgba(99,102,241,.15);color:#818cf8;border:1px solid rgba(99,102,241,.3)}
-.rp{background:rgba(34,197,94,.15);color:#22c55e;border:1px solid rgba(34,197,94,.3)}
+/* LINES DÉCO */
+.lines{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.line{position:absolute;top:0;bottom:0;width:1px;background:linear-gradient(to bottom,transparent 0%,rgba(212,168,0,.06) 30%,rgba(212,168,0,.06) 70%,transparent 100%)}
+.line:nth-child(1){left:16.66%}.line:nth-child(2){left:33.33%}.line:nth-child(3){left:50%}.line:nth-child(4){left:66.66%}.line:nth-child(5){left:83.33%}
 
-/* HEADER */
-.hdr{background:linear-gradient(180deg,#1e0e02,#0d0703);border-bottom:1px solid rgba(212,168,0,.2);padding:0 20px;position:sticky;top:0;z-index:50}
-.hdi{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
-.logo{display:flex;align-items:center;gap:10px}
-.li2{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,#c8860a,#f0a500);display:flex;align-items:center;justify-content:center;font-weight:900;color:#1a0800;font-size:13px}
-.ln{font-weight:800;font-size:13px;letter-spacing:.06em;color:#fff}
-.ln span{color:#d4a800}
-.ls{font-size:8px;color:#777;letter-spacing:.12em;text-transform:uppercase}
-.nav{display:flex;gap:2px}
-.nb{padding:5px 12px;border-radius:7px;border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:500;background:transparent;color:#777;border-bottom:2px solid transparent;transition:all .2s}
-.nb.active{background:rgba(212,168,0,.15);color:#d4a800;border-bottom-color:#d4a800}
-.hr{display:flex;align-items:center;gap:8px}
-.sm{font-size:11px;color:#22c55e}
-.lout{padding:5px 11px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.25);border-radius:7px;color:#ef4444;cursor:pointer;font-size:11px;font-family:inherit}
-.addb{padding:6px 13px;background:linear-gradient(135deg,#c8860a,#f0a500);border:none;border-radius:7px;color:#1a0800;font-weight:700;cursor:pointer;font-size:12px}
-.rob{background:rgba(99,102,241,.08);border-bottom:1px solid rgba(99,102,241,.2);padding:8px 20px;text-align:center;font-size:12px;color:#818cf8}
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:20px 60px;display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,rgba(7,5,3,.9) 0%,transparent 100%);backdrop-filter:blur(2px)}
+.nav-logo{display:flex;align-items:center;gap:12px}
+.nav-logo-mark{width:34px;height:34px;background:linear-gradient(135deg,var(--gold-dark),var(--gold-light));border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:18px;color:#1a0800;letter-spacing:0}
+.nav-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.15em;color:#fff}
+.nav-name span{color:var(--gold)}
+.nav-links{display:flex;gap:36px;align-items:center}
+.nav-links a{color:var(--text-muted);font-size:12px;text-decoration:none;letter-spacing:.12em;text-transform:uppercase;transition:color .3s}
+.nav-links a:hover{color:var(--gold)}
+.nav-cta{padding:10px 22px;background:transparent;border:1px solid var(--gold);border-radius:3px;color:var(--gold);font-size:11px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;transition:all .3s;font-family:'DM Sans',sans-serif}
+.nav-cta:hover{background:var(--gold);color:#1a0800}
 
-/* MAIN */
-.main{max-width:1200px;margin:0 auto;padding:22px 20px}
-.kg{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:22px}
-.kc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:11px;padding:14px 16px;border-left:3px solid}
-.kl{font-size:9px;color:#777;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px}
-.kv{font-size:26px;font-weight:800;line-height:1}
-.ks{font-size:9px;color:#666;margin-top:4px}
-.tc{background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.07);border-radius:13px;overflow:hidden}
-.th{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,.06);display:flex;justify-content:space-between;align-items:center}
-.tt{font-weight:700;font-size:13px;color:#fff}
-.fi{display:flex;gap:5px}
-.fb{padding:3px 9px;border-radius:6px;border:1px solid rgba(255,255,255,.08);cursor:pointer;background:transparent;color:#666;font-size:10px;font-family:inherit}
-.fb.active{border-color:#d4a800;background:rgba(212,168,0,.08);color:#d4a800}
-table{width:100%;border-collapse:collapse}
-th{padding:8px 12px;text-align:left;font-size:9px;color:#555;text-transform:uppercase;letter-spacing:.08em;font-weight:600}
-td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04)}
-tr:nth-child(even) td{background:rgba(255,255,255,.01)}
-.pi{display:flex;align-items:center;gap:8px}
-.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
-.pn{font-weight:600;font-size:12px;color:#fff}
-.pc{font-size:9px;color:#666}
-.sr{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:3px solid;font-weight:800}
-.st{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid;white-space:nowrap}
-.grd{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
-.ab{display:flex;gap:4px}
-.be{padding:3px 8px;background:rgba(212,168,0,.1);border:1px solid rgba(212,168,0,.25);border-radius:5px;color:#d4a800;cursor:pointer;font-size:10px}
-.bd{padding:3px 8px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:5px;color:#ef4444;cursor:pointer;font-size:10px}
+/* HERO */
+.hero{position:relative;min-height:100vh;display:flex;align-items:center;justify-content:center;text-align:center;padding:120px 40px 80px;overflow:hidden;z-index:2}
+.hero-glow{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:600px;height:600px;background:radial-gradient(ellipse,rgba(212,168,0,.08) 0%,transparent 70%);pointer-events:none}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;padding:6px 16px;border:1px solid rgba(212,168,0,.25);border-radius:2px;font-size:10px;letter-spacing:.25em;text-transform:uppercase;color:var(--gold);margin-bottom:32px;animation:fadeUp .8s ease both}
+.hero-tag::before{content:'';width:20px;height:1px;background:var(--gold)}
+.hero-tag::after{content:'';width:20px;height:1px;background:var(--gold)}
+.hero-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(64px,10vw,140px);line-height:.92;letter-spacing:.02em;margin-bottom:24px;animation:fadeUp .8s .1s ease both}
+.hero-title em{font-style:normal;color:var(--gold);display:block}
+.hero-title span{color:var(--text-dim)}
+.hero-sub{font-family:'Cormorant Garamond',serif;font-size:clamp(18px,2.5vw,26px);color:var(--text-muted);font-style:italic;max-width:700px;margin:0 auto 48px;line-height:1.6;animation:fadeUp .8s .2s ease both}
+.hero-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;animation:fadeUp .8s .3s ease both}
+.btn-primary{padding:16px 40px;background:linear-gradient(135deg,var(--gold-dark),var(--gold-light));color:#1a0800;font-weight:700;font-size:13px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all .3s;border:none;cursor:none}
+.btn-primary:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(212,168,0,.3)}
+.btn-secondary{padding:16px 40px;background:transparent;border:1px solid rgba(255,255,255,.15);color:var(--text-muted);font-size:13px;letter-spacing:.15em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all .3s}
+.btn-secondary:hover{border-color:var(--gold);color:var(--gold)}
+.hero-scroll{position:absolute;bottom:40px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;animation:fadeUp .8s .5s ease both}
+.hero-scroll span{font-size:9px;letter-spacing:.2em;text-transform:uppercase;color:var(--text-dim)}
+.scroll-line{width:1px;height:40px;background:linear-gradient(to bottom,var(--gold),transparent);animation:scrollDown 2s infinite}
+@keyframes scrollDown{0%{transform:scaleY(0);transform-origin:top}50%{transform:scaleY(1);transform-origin:top}51%{transform:scaleY(1);transform-origin:bottom}100%{transform:scaleY(0);transform-origin:bottom}}
 
-/* SOCIAL LINKS */
-.sl{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:5px;text-decoration:none;font-size:10px;font-weight:600;transition:opacity .2s}
-.sl:hover{opacity:.7}
-.sl-ig{background:rgba(225,48,108,.12);color:#E1306C;border:1px solid rgba(225,48,108,.3)}
-.sl-tk{background:rgba(105,201,208,.12);color:#69C9D0;border:1px solid rgba(105,201,208,.3)}
-.sl-fb{background:rgba(24,119,242,.12);color:#1877F2;border:1px solid rgba(24,119,242,.3)}
+/* STATS BAR */
+.stats{position:relative;z-index:2;border-top:1px solid rgba(212,168,0,.1);border-bottom:1px solid rgba(212,168,0,.1);background:rgba(212,168,0,.03);padding:40px 60px;display:flex;justify-content:center;gap:0}
+.stat{flex:1;max-width:200px;text-align:center;position:relative}
+.stat+.stat::before{content:'';position:absolute;left:0;top:50%;transform:translateY(-50%);height:40px;width:1px;background:rgba(212,168,0,.15)}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:48px;color:var(--gold);line-height:1;letter-spacing:.05em}
+.stat-label{font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--text-muted);margin-top:4px}
 
-/* MODAL */
-.mo{position:fixed;inset:0;background:rgba(0,0,0,.82);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(6px)}
-.md{background:#1a1008;border:1px solid rgba(212,168,0,.3);border-radius:16px;padding:26px;width:min(680px,95vw);max-height:90vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,.7)}
-.mh{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
-.mt{font-size:17px;font-weight:800;color:#fff}
-.cb{background:rgba(255,255,255,.08);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:15px}
-.sc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:10px;padding:14px;margin-bottom:14px}
-.stl{color:#d4a800;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
-label{display:block;font-size:11px;color:#888;margin-bottom:5px;margin-top:10px}
-input[type=text],input[type=number],input[type=password],select,textarea{width:100%;padding:8px 11px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:7px;color:#fff;font-size:13px;font-family:inherit}
-.gb{display:flex;gap:8px;margin-top:6px}
-.gs{flex:1;padding:7px 0;border-radius:7px;cursor:pointer;border:1px solid rgba(255,255,255,.1);background:transparent;color:#666;font-family:inherit;font-size:10px;font-weight:700;text-transform:uppercase}
-.sv{width:100%;padding:11px;background:linear-gradient(135deg,#c8860a,#f0a500);border:none;border-radius:9px;color:#1a0800;cursor:pointer;font-family:inherit;font-weight:800;font-size:14px;margin-top:8px}
-.cv{width:100%;padding:11px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:9px;color:#aaa;cursor:pointer;font-family:inherit;margin-top:8px}
-.mg{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
-.pb{background:rgba(255,255,255,.07);border-radius:4px;height:5px;overflow:hidden;margin-top:4px}
-.pf{height:100%;border-radius:4px;transition:width .5s}
+/* SECTIONS */
+section{position:relative;z-index:2;padding:120px 60px}
+.section-tag{font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:16px;display:flex;align-items:center;gap:12px}
+.section-tag::before{content:'';width:30px;height:1px;background:var(--gold)}
+.section-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(40px,6vw,80px);line-height:.95;letter-spacing:.02em;margin-bottom:24px}
+.section-body{font-size:16px;color:var(--text-muted);line-height:1.8;max-width:560px}
+.max{max-width:1200px;margin:0 auto}
 
-/* PARTNER CARDS */
-.pcg{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.pcd{background:rgba(255,255,255,.025);border-radius:13px;padding:16px;border:1px solid}
-.cto{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px}
-.cac{background:rgba(255,255,255,.03);border-radius:8px;padding:8px;margin:10px 0}
-.ar{display:flex;align-items:center;gap:6px;margin-bottom:4px;font-size:10px}
-.dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.ps{display:flex;gap:6px;margin-bottom:9px}
-.psb{flex:1;background:rgba(255,255,255,.04);border-radius:6px;padding:5px;text-align:center}
-.cbts{display:flex;gap:6px;margin-top:10px}
+/* MANIFESTO */
+.manifesto{background:var(--bg2)}
+.manifesto-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.manifesto-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(24px,3vw,42px);font-style:italic;line-height:1.4;color:var(--text);position:relative;padding-left:32px}
+.manifesto-quote::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(to bottom,var(--gold),transparent)}
+.manifesto-text p{margin-bottom:16px}
 
-/* OBLIGATIONS */
-.og{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
-.oc{border-radius:13px;padding:18px}
-.or{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:rgba(0,0,0,.2);border-radius:6px;margin-bottom:5px;font-size:11px}
+/* THREE PILLARS */
+.pillars{background:var(--bg)}
+.pillars-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:60px}
+.pillar{padding:48px 36px;position:relative;overflow:hidden;transition:all .4s}
+.pillar::before{content:'';position:absolute;inset:0;background:var(--bg3);z-index:0;transition:transform .4s}
+.pillar:hover::before{transform:scaleY(1.02)}
+.pillar-content{position:relative;z-index:1}
+.pillar-num{font-family:'Bebas Neue',sans-serif;font-size:72px;color:rgba(212,168,0,.1);line-height:1;margin-bottom:24px;transition:color .4s}
+.pillar:hover .pillar-num{color:rgba(212,168,0,.2)}
+.pillar-icon{font-size:28px;margin-bottom:20px}
+.pillar-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;margin-bottom:16px;color:#fff}
+.pillar-body{font-size:14px;color:var(--text-muted);line-height:1.8}
+.pillar-divider{width:30px;height:2px;background:var(--gold);margin:20px 0}
+.pillar-points{list-style:none;margin-top:16px}
+.pillar-points li{font-size:13px;color:var(--text-muted);padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);display:flex;align-items:center;gap:8px}
+.pillar-points li::before{content:'→';color:var(--gold);font-size:11px;flex-shrink:0}
 
-/* SETTINGS */
-.ss{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:20px;margin-bottom:16px}
-.sr2{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
-input[type=range]{width:100%;cursor:pointer;accent-color:#d4a800}
+/* GRADES */
+.grades{background:var(--bg2);overflow:hidden}
+.grades-intro{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:end;margin-bottom:80px}
+.grades-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.grade-card{padding:48px 36px;position:relative;overflow:hidden;cursor:none}
+.grade-card::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px}
+.grade-silver::after{background:linear-gradient(to right,var(--silver),transparent)}
+.grade-gold::after{background:linear-gradient(to right,var(--gold),transparent)}
+.grade-platinum::after{background:linear-gradient(to right,var(--platinum),transparent)}
+.grade-bg{position:absolute;inset:0;z-index:0;transition:opacity .4s}
+.grade-silver .grade-bg{background:radial-gradient(ellipse at top left,rgba(184,184,200,.05) 0%,transparent 70%)}
+.grade-gold .grade-bg{background:radial-gradient(ellipse at top left,rgba(212,168,0,.08) 0%,transparent 70%)}
+.grade-platinum .grade-bg{background:radial-gradient(ellipse at top left,rgba(184,184,255,.08) 0%,transparent 70%)}
+.grade-card:hover .grade-bg{opacity:2}
+.grade-content{position:relative;z-index:1}
+.grade-icon{font-size:36px;margin-bottom:20px;display:block}
+.grade-name{font-family:'Bebas Neue',sans-serif;font-size:42px;letter-spacing:.05em;margin-bottom:8px}
+.grade-silver .grade-name{color:var(--silver)}
+.grade-gold .grade-name{color:var(--gold)}
+.grade-platinum .grade-name{color:var(--platinum)}
+.grade-tagline{font-family:'Cormorant Garamond',serif;font-size:14px;font-style:italic;color:var(--text-muted);margin-bottom:28px}
+.grade-obligations{list-style:none}
+.grade-obligations li{padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;color:var(--text-muted);display:flex;justify-content:space-between;align-items:center;gap:16px}
+.grade-obligations li span{font-weight:500;color:var(--text)}
+.grade-obligations strong{font-family:'Bebas Neue',sans-serif;font-size:18px}
+.grade-silver .grade-obligations strong{color:var(--silver)}
+.grade-gold .grade-obligations strong{color:var(--gold)}
+.grade-platinum .grade-obligations strong{color:var(--platinum)}
 
-/* USERS */
-.ut{width:100%;border-collapse:collapse;margin-top:12px}
-.ut th{padding:8px 12px;text-align:left;font-size:10px;color:#666;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,.06)}
-.ut td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;vertical-align:middle}
+/* SCORING */
+.scoring{background:var(--bg);padding:120px 60px}
+.scoring-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;margin-top:60px}
+.score-visual{position:relative}
+.score-rings{display:flex;flex-direction:column;gap:16px}
+.score-item{display:grid;grid-template-columns:160px 1fr 48px;align-items:center;gap:20px}
+.score-name{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)}
+.score-bar-wrap{height:4px;background:rgba(255,255,255,.06);border-radius:2px;overflow:hidden}
+.score-bar{height:100%;border-radius:2px;position:relative;overflow:hidden}
+.score-bar::after{content:'';position:absolute;inset:0;background:linear-gradient(to right,transparent,rgba(255,255,255,.3),transparent);animation:shimmer 2s infinite}
+@keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.score-pts{font-family:'Bebas Neue',sans-serif;font-size:20px;color:var(--gold);text-align:right}
+.score-status{display:flex;flex-direction:column;gap:12px;margin-top:40px}
+.status-item{display:flex;align-items:center;gap:16px;padding:16px 20px;border-radius:4px}
+.status-conforme{background:rgba(34,197,94,.06);border:1px solid rgba(34,197,94,.15)}
+.status-partial{background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15)}
+.status-nc{background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.15)}
+.status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.status-conforme .status-dot{background:#22c55e}
+.status-partial .status-dot{background:#f59e0b}
+.status-nc .status-dot{background:#ef4444}
+.status-label{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.05em}
+.status-conforme .status-label{color:#22c55e}
+.status-partial .status-label{color:#f59e0b}
+.status-nc .status-label{color:#ef4444}
+.status-desc{font-size:12px;color:var(--text-muted)}
 
-/* CHARTS */
-.cg{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;margin-bottom:22px}
-.cc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px}
-.ct{font-size:12px;font-weight:700;color:#d4a800;margin-bottom:14px;text-transform:uppercase;letter-spacing:.08em}
+/* CHARTER */
+.charter{background:var(--bg2)}
+.charter-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center}
+.charter-list{list-style:none;margin-top:32px}
+.charter-list li{padding:18px 0;border-bottom:1px solid rgba(212,168,0,.08);display:flex;gap:20px;align-items:flex-start;opacity:0;animation:fadeUp .6s ease forwards}
+.charter-list li:nth-child(1){animation-delay:.1s}
+.charter-list li:nth-child(2){animation-delay:.2s}
+.charter-list li:nth-child(3){animation-delay:.3s}
+.charter-list li:nth-child(4){animation-delay:.4s}
+.charter-list li:nth-child(5){animation-delay:.5s}
+.charter-list li:nth-child(6){animation-delay:.6s}
+.charter-num{font-family:'Bebas Neue',sans-serif;font-size:32px;color:rgba(212,168,0,.3);line-height:1;flex-shrink:0;width:36px}
+.charter-text strong{display:block;font-size:14px;color:var(--text);margin-bottom:4px}
+.charter-text p{font-size:13px;color:var(--text-muted);line-height:1.6}
+.charter-cta{margin-top:40px;padding:32px;background:rgba(212,168,0,.05);border:1px solid rgba(212,168,0,.15);border-radius:4px}
+.charter-cta p{font-size:14px;color:var(--text-muted);line-height:1.7;margin-bottom:20px}
+.charter-cta strong{color:var(--gold)}
 
-/* EXPORT */
-.eg2{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:20px}
-.eb{padding:9px 16px;border-radius:8px;border:1px solid;cursor:pointer;font-family:inherit;font-size:12px;font-weight:700;display:flex;align-items:center;gap:6px;transition:opacity .2s}
-.eb:hover{opacity:.8}
-.eb-csv{background:rgba(34,197,94,.1);border-color:rgba(34,197,94,.3);color:#22c55e}
-.eb-pdf{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.3);color:#ef4444}
-.eb-xls{background:rgba(34,197,94,.1);border-color:rgba(74,222,128,.3);color:#4ade80}
+/* EXCLUSION */
+.exclusion{background:var(--bg);padding:80px 60px}
+.exclusion-inner{max-width:900px;margin:0 auto;text-align:center}
+.exclusion-title{font-family:'Cormorant Garamond',serif;font-size:clamp(28px,4vw,52px);font-style:italic;line-height:1.3;margin-bottom:24px;color:var(--text)}
+.exclusion-title strong{font-style:normal;color:var(--gold);display:block}
+.exclusion-body{font-size:15px;color:var(--text-muted);line-height:1.9;max-width:680px;margin:0 auto 48px}
+.exclusion-levels{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:40px}
+.level-card{padding:32px 24px;background:var(--bg3);text-align:left}
+.level-icon{font-size:24px;margin-bottom:14px}
+.level-title{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.05em;color:#fff;margin-bottom:8px}
+.level-desc{font-size:12px;color:var(--text-muted);line-height:1.7}
 
-/* HELP */
-.hg{display:grid;grid-template-columns:280px 1fr;gap:20px}
-.hm{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:16px}
-.hmi{padding:8px 12px;border-radius:7px;cursor:pointer;font-size:12px;color:#888;margin-bottom:4px;display:flex;align-items:center;gap:8px}
-.hmi.active{background:rgba(212,168,0,.1);color:#d4a800}
-.hc{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:24px}
-.hh1{font-size:18px;font-weight:800;color:#fff;margin-bottom:6px}
-.hh2{font-size:14px;font-weight:700;color:#d4a800;margin:18px 0 8px}
-.ht{font-size:13px;color:#aaa;line-height:1.7;margin-bottom:10px}
-.hbox{background:rgba(255,255,255,.03);border-left:3px solid #d4a800;border-radius:0 8px 8px 0;padding:12px 16px;margin:12px 0;font-size:12px;color:#ccc}
+/* FINAL CTA */
+.final-cta{background:linear-gradient(135deg,#0f0a04 0%,#1a1004 50%,#0f0a04 100%);padding:140px 60px;text-align:center;position:relative;overflow:hidden}
+.final-cta::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:800px;background:radial-gradient(ellipse,rgba(212,168,0,.06) 0%,transparent 70%);pointer-events:none}
+.final-cta-content{position:relative;z-index:1}
+.final-cta-pre{font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--gold);margin-bottom:24px}
+.final-cta-title{font-family:'Bebas Neue',sans-serif;font-size:clamp(56px,8vw,100px);line-height:.95;letter-spacing:.02em;margin-bottom:32px}
+.final-cta-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-top:48px}
 
-/* LOADING */
-.ld{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:14px}
-.sp{width:38px;height:38px;border-radius:50%;border:3px solid rgba(212,168,0,.15);border-top-color:#d4a800;animation:spin .8s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:768px){.kg{grid-template-columns:repeat(2,1fr)}.nav{display:none}.hg{grid-template-columns:1fr}}
+/* FOOTER */
+footer{border-top:1px solid rgba(212,168,0,.1);padding:40px 60px;display:flex;align-items:center;justify-content:space-between;position:relative;z-index:2}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.15em}
+.footer-logo span{color:var(--gold)}
+.footer-copy{font-size:11px;color:var(--text-dim);letter-spacing:.08em}
+.footer-version{font-size:11px;color:var(--text-dim);padding:4px 10px;border:1px solid rgba(212,168,0,.1);border-radius:20px}
+
+/* REVEAL ANIMATION */
+.reveal{opacity:0;transform:translateY(30px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* DIVIDER */
+.divider{height:1px;background:linear-gradient(to right,transparent,rgba(212,168,0,.2),transparent);margin:0 60px}
+
+@media(max-width:900px){
+  nav{padding:20px 24px}.nav-links{display:none}
+  section{padding:80px 24px}
+  .manifesto-grid,.grades-intro,.scoring-grid,.charter-grid{grid-template-columns:1fr}
+  .pillars-grid,.grades-cards,.exclusion-levels{grid-template-columns:1fr}
+  .stats{padding:40px 24px;flex-wrap:wrap}
+  footer{flex-direction:column;gap:16px;text-align:center;padding:30px 24px}
+  .hero{padding:100px 24px 80px}
+  .final-cta{padding:80px 24px}
+}
 </style>
 </head>
 <body>
-<div id="app"></div>
-<script>
-const API='https://seakebab-dashboard-production.up.railway.app';
-const GS={silver:{l:'Silver',c:'#C0C0C0',i:'◆'},gold:{l:'Gold',c:'#FFD700',i:'★'},platinum:{l:'Platinum',c:'#b8b8ff',i:'✦'}};
-const PL=['Instagram','TikTok','Facebook'];
-const PC={Instagram:'#E1306C',TikTok:'#69C9D0',Facebook:'#1877F2'};
-const SC_LINK={Instagram:'https://instagram.com/',TikTok:'https://tiktok.com/@',Facebook:'https://facebook.com/'};
 
-function sc(s){return s>=80?'#22c55e':s>=60?'#f59e0b':'#ef4444'}
-function sl(s){return s>=80?'Conforme':s>=60?'Partiel':'Non conforme'}
-function cc(p,st){
-  const ob=st[p.grade];
-  const scores=PL.map(pl=>{const m=p.metrics[pl];const v=Math.min(m.posts/Math.max(ob.posts_month,1),1)*25+Math.min(m.reposts/Math.max(ob.reposts_month,1),1)*20+Math.min(m.republish/Math.max(ob.republish_month,1),1)*15+Math.min(m.quality/Math.max(ob.quality_min,1),1)*25+(m.tagged/Math.max(m.posts,1))*15;return Math.min(Math.round(v),100);});
-  return{pp:Object.fromEntries(PL.map((pl,i)=>[pl,scores[i]])),g:Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)};
-}
-function ring(s,sz=44){const c=sc(s);return`<div class="sr" style="width:${sz}px;height:${sz}px;border-color:${c};color:${c};font-size:${sz<42?10:12}px;background:${c}18">${s}</div>`}
-function gbadge(g){const x=GS[g];return`<span class="grd" style="background:${x.c}20;border:1px solid ${x.c}60;color:${x.c}">${x.i} ${x.l}</span>`}
-function pbar(v,mx){const p=Math.min((v/Math.max(mx,1))*100,100);const c=p>=100?'#22c55e':p>=60?'#f59e0b':'#ef4444';return`<div class="pb"><div class="pf" style="width:${p}%;background:${c}"></div></div>`}
-function socialLink(pl,account){
-  if(!account)return`<span style="color:#555;font-size:10px">Non renseigné</span>`;
-  const cls={Instagram:'sl-ig',TikTok:'sl-tk',Facebook:'sl-fb'}[pl];
-  const handle=account.replace('@','');
-  const url=SC_LINK[pl]+handle;
-  return`<a href="${url}" target="_blank" class="sl ${cls}" data-tip="Ouvrir ${pl} de ce partenaire">🔗 ${account}</a>`;
-}
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="lines"><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div><div class="line"></div></div>
 
-let state={auth:null,partners:[],settings:{brand_tag:'@seakebab',silver:{posts_month:4,reposts_month:2,republish_month:1,quality_min:60},gold:{posts_month:8,reposts_month:4,republish_month:2,quality_min:70},platinum:{posts_month:12,reposts_month:6,republish_month:3,quality_min:80}},users:[],loading:true,tab:'overview',filter:'all',modal:null,saveMsg:'',editId:null,helpSection:'intro',charts:{}};
-const saved=localStorage.getItem('skauth');if(saved){try{state.auth=JSON.parse(saved);}catch(e){localStorage.removeItem('skauth');}}
-
-function ah(){return{'Content-Type':'application/json','Authorization':'Bearer '+(state.auth?.token||'')}}
-async function ag(p){const r=await fetch(API+p,{headers:ah()});if(r.status===401){logout();return null}return r.json()}
-async function ap(p,b){const r=await fetch(API+p,{method:'POST',headers:ah(),body:JSON.stringify(b)});if(r.status===401){logout();return null}return r.json()}
-async function apu(p,b){const r=await fetch(API+p,{method:'PUT',headers:ah(),body:JSON.stringify(b)});return r.json()}
-async function adel(p){const r=await fetch(API+p,{method:'DELETE',headers:ah()});return r.json()}
-
-async function login(u,pw){
-  try{
-    document.getElementById('lerr').style.display='none';
-    const r=await fetch(API+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:pw})});
-    const d=await r.json();
-    if(d.error||!d.token){const el=document.getElementById('lerr');if(el){el.style.display='block';el.textContent=d.error||'Erreur de connexion';}return;}
-    state.auth=d;localStorage.setItem('skauth',JSON.stringify(d));await loadData();
-  }catch(e){const el=document.getElementById('lerr');if(el){el.style.display='block';el.textContent='Impossible de contacter le serveur. Vérifiez votre connexion.';}}
-}
-function logout(){if(state.auth?.token)ap('/api/logout',{});state.auth=null;localStorage.removeItem('skauth');state.partners=[];state.tab='overview';state.charts={};render();}
-async function loadData(){
-  state.loading=true;render();
-  try{
-    const[pa,se]=await Promise.all([ag('/api/partners'),ag('/api/settings')]);
-    if(pa)state.partners=pa;if(se)state.settings=se;
-    if(state.auth?.role==='admin'){const us=await ag('/api/users');if(us)state.users=us;}
-  }catch(e){console.error('Load error:',e);}
-  state.loading=false;render();
-}
-function flash(m,c='#22c55e'){state.saveMsg=m;state.saveMsgColor=c;render();setTimeout(()=>{state.saveMsg='';render();},3000)}
-const isA=()=>state.auth?.role==='admin';
-const isRO=()=>state.auth?.role!=='admin';
-const isP=()=>state.auth?.role==='partner';
-
-async function savePart(id,data){const r=await apu('/api/partners/'+id,data);if(r?.error){flash('⚠ '+r.error,'#ef4444');return;}await loadData();flash('✓ Sauvegardé');closeM();}
-async function addPart(data){const r=await ap('/api/partners',data);if(r?.error){flash('⚠ '+r.error,'#ef4444');return;}await loadData();flash('✓ Partenaire ajouté');closeM();}
-async function delPart(id){if(!confirm('Supprimer ce partenaire définitivement ?'))return;await adel('/api/partners/'+id);await loadData();flash('✓ Supprimé');}
-async function saveSett(data){await apu('/api/settings',data);state.settings=data;flash('✓ Paramètres sauvegardés');render();}
-async function addUser(data){const r=await ap('/api/users',data);if(r?.error){alert(r.error);return;}await loadData();flash('✓ Utilisateur créé');closeM();}
-async function updateUser(id,data){const r=await apu('/api/users/'+id,data);if(r?.error){alert(r.error);return;}await loadData();flash('✓ Mis à jour');closeM();}
-async function delUser(id){if(!confirm('Supprimer cet utilisateur ?'))return;await adel('/api/users/'+id);await loadData();flash('✓ Supprimé');}
-function closeM(){state.modal=null;state.editId=null;state.editUserId=null;render();}
-
-// ── EXPORT ────────────────────────────────────────────────────────────────────
-function exportCSV(){
-  const en=state.partners.map(p=>({...p,comp:cc(p,state.settings)}));
-  let csv='Partenaire,Ville,Grade,Instagram Score,TikTok Score,Facebook Score,Score Global,Statut,Compte Instagram,Compte TikTok,Compte Facebook\n';
-  en.forEach(p=>{
-    csv+=`"${p.name}","${p.city}","${p.grade}",${p.comp.pp.Instagram},${p.comp.pp.TikTok},${p.comp.pp.Facebook},${p.comp.g},"${sl(p.comp.g)}","${p.accounts?.Instagram||''}","${p.accounts?.TikTok||''}","${p.accounts?.Facebook||''}"\n`;
-  });
-  const blob=new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='seakebab-compliance-'+new Date().toISOString().slice(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
-  flash('✓ CSV exporté');
-}
-
-function exportXLS(){
-  const en=state.partners.map(p=>({...p,comp:cc(p,state.settings)}));
-  const data=[['Partenaire','Ville','Grade','Score Instagram','Score TikTok','Score Facebook','Score Global','Statut','Compte Instagram','Compte TikTok','Compte Facebook','Posts IG','Reposts IG','Qualité IG']];
-  en.forEach(p=>{
-    data.push([p.name,p.city,GS[p.grade].l,p.comp.pp.Instagram,p.comp.pp.TikTok,p.comp.pp.Facebook,p.comp.g,sl(p.comp.g),p.accounts?.Instagram||'',p.accounts?.TikTok||'',p.accounts?.Facebook||'',p.metrics.Instagram.posts,p.metrics.Instagram.reposts,p.metrics.Instagram.quality]);
-  });
-  const ws=XLSX.utils.aoa_to_sheet(data);
-  ws['!cols']=[{wch:20},{wch:15},{wch:12},{wch:15},{wch:12},{wch:15},{wch:12},{wch:14},{wch:20},{wch:20},{wch:25},{wch:10},{wch:10},{wch:10}];
-  const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Partenaires');
-  const month=new Date().toLocaleString('fr',{month:'long',year:'numeric'});
-  const ws2data=[['Rapport SEA•KEBAB Partner Compliance'],[`Généré le ${new Date().toLocaleDateString('fr')}`],['']];
-  const ws2=XLSX.utils.aoa_to_sheet(ws2data);XLSX.utils.book_append_sheet(wb,ws2,'Info');
-  XLSX.writeFile(wb,'seakebab-compliance-'+new Date().toISOString().slice(0,10)+'.xlsx');
-  flash('✓ Excel exporté');
-}
-
-function exportPDF(){
-  const {jsPDF}=window.jspdf;const doc=new jsPDF('landscape');
-  doc.setFillColor(13,7,3);doc.rect(0,0,297,210,'F');
-  doc.setTextColor(212,168,0);doc.setFontSize(18);doc.setFont('helvetica','bold');
-  doc.text('SEA•KEBAB Partner Compliance',20,20);
-  doc.setTextColor(180,150,100);doc.setFontSize(10);doc.setFont('helvetica','normal');
-  doc.text('Rapport généré le '+new Date().toLocaleDateString('fr-FR')+' — '+state.partners.length+' partenaire(s)',20,28);
-  const en=state.partners.map(p=>({...p,comp:cc(p,state.settings)}));
-  const rows=en.map(p=>[p.name,p.city,GS[p.grade].l,p.comp.pp.Instagram+'/100',p.comp.pp.TikTok+'/100',p.comp.pp.Facebook+'/100',p.comp.g+'/100',sl(p.comp.g)]);
-  doc.autoTable({startY:35,head:[['Partenaire','Ville','Grade','Instagram','TikTok','Facebook','Global','Statut']],body:rows,
-    theme:'grid',headStyles:{fillColor:[30,14,2],textColor:[212,168,0],fontSize:9,fontStyle:'bold'},
-    bodyStyles:{fillColor:[20,10,3],textColor:[220,200,180],fontSize:9},
-    alternateRowStyles:{fillColor:[25,12,2]},
-    columnStyles:{7:{cellWidth:22}},styles:{lineColor:[50,40,20],lineWidth:0.3}});
-  doc.save('seakebab-compliance-'+new Date().toISOString().slice(0,10)+'.pdf');
-  flash('✓ PDF exporté');
-}
-
-// ── CHARTS ────────────────────────────────────────────────────────────────────
-function drawCharts(){
-  const en=state.partners.map(p=>({...p,comp:cc(p,state.settings)})).sort((a,b)=>b.comp.g-a.comp.g);
-  // Chart 1: scores par partenaire
-  const c1=document.getElementById('ch1');
-  if(c1){
-    if(state.charts.c1)state.charts.c1.destroy();
-    state.charts.c1=new Chart(c1,{type:'bar',data:{labels:en.map(p=>p.name.length>12?p.name.slice(0,12)+'…':p.name),datasets:[{label:'Instagram',data:en.map(p=>p.comp.pp.Instagram),backgroundColor:'rgba(225,48,108,.6)',borderColor:'#E1306C',borderWidth:1},{label:'TikTok',data:en.map(p=>p.comp.pp.TikTok),backgroundColor:'rgba(105,201,208,.6)',borderColor:'#69C9D0',borderWidth:1},{label:'Facebook',data:en.map(p=>p.comp.pp.Facebook),backgroundColor:'rgba(24,119,242,.6)',borderColor:'#1877F2',borderWidth:1}]},options:{responsive:true,plugins:{legend:{labels:{color:'#aaa',font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y}/100`}}},scales:{x:{ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},y:{min:0,max:100,ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}}},backgroundColor:'transparent'}});
-  }
-  // Chart 2: distribution grades
-  const c2=document.getElementById('ch2');
-  if(c2){
-    if(state.charts.c2)state.charts.c2.destroy();
-    const gCount={silver:0,gold:0,platinum:0};state.partners.forEach(p=>gCount[p.grade]++);
-    state.charts.c2=new Chart(c2,{type:'doughnut',data:{labels:['Silver','Gold','Platinum'],datasets:[{data:[gCount.silver,gCount.gold,gCount.platinum],backgroundColor:['rgba(192,192,192,.6)','rgba(255,215,0,.6)','rgba(184,184,255,.6)'],borderColor:['#C0C0C0','#FFD700','#b8b8ff'],borderWidth:2}]},options:{responsive:true,plugins:{legend:{labels:{color:'#aaa',font:{size:11}}},tooltip:{callbacks:{label:ctx=>`${ctx.label}: ${ctx.parsed} partenaire(s)`}}}}});
-  }
-  // Chart 3: conformité globale
-  const c3=document.getElementById('ch3');
-  if(c3){
-    if(state.charts.c3)state.charts.c3.destroy();
-    const conf=en.filter(p=>p.comp.g>=80).length,part=en.filter(p=>p.comp.g>=60&&p.comp.g<80).length,nc=en.filter(p=>p.comp.g<60).length;
-    state.charts.c3=new Chart(c3,{type:'bar',data:{labels:['Conforme (≥80)','Partiel (60-79)','Non conforme (<60)'],datasets:[{data:[conf,part,nc],backgroundColor:['rgba(34,197,94,.5)','rgba(245,158,11,.5)','rgba(239,68,68,.5)'],borderColor:['#22c55e','#f59e0b','#ef4444'],borderWidth:2}]},options:{responsive:true,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y} partenaire(s)`}}},scales:{x:{ticks:{color:'#888',font:{size:10}},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{color:'#888',font:{size:10},stepSize:1},grid:{color:'rgba(255,255,255,.05)'}}}}});
-  }
-}
-
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function render(){
-  document.getElementById('app').innerHTML=build();
-  bindEv();
-  if(state.auth&&!state.loading&&(state.tab==='overview'||state.tab==='charts'))setTimeout(drawCharts,100);
-}
-
-function build(){
-  if(!state.auth)return bLogin();
-  if(state.loading)return`<div class="ld"><div class="sp"></div><p style="color:#888">Chargement...</p></div>`;
-  const en=state.partners.map(p=>({...p,comp:cc(p,state.settings)}));
-  const di=en.filter(p=>state.filter==='all'||p.grade===state.filter).sort((a,b)=>b.comp.g-a.comp.g);
-  const tot=en.length,conf=en.filter(p=>p.comp.g>=80).length,part=en.filter(p=>p.comp.g>=60&&p.comp.g<80).length,nc=en.filter(p=>p.comp.g<60).length,avg=tot?Math.round(en.reduce((s,p)=>s+p.comp.g,0)/tot):0;
-  const tabs=isA()?[['overview',"Vue d'ensemble"],['charts','📊 Graphiques'],['partners','Partenaires'],['obligations','Obligations'],['settings','⚙️ Paramètres'],['users','👥 Utilisateurs'],['help','❓ Aide']]:isP()?[['overview','Mon Dashboard'],['charts','Mes Graphiques'],['help','❓ Aide']]:[['overview',"Vue d'ensemble"],['charts','📊 Graphiques'],['partners','Partenaires'],['obligations','Obligations'],['help','❓ Aide']];
-  const rc=isA()?'ra':state.auth.role==='viewer'?'rv':'rp';
-  const rl=isA()?'Admin':state.auth.role==='viewer'?'Viewer':'Partenaire';
-  return`
-    <div class="hdr"><div class="hdi">
-      <div class="logo"><div class="li2">S</div><div><div class="ln">SEA<span>•</span>KEBAB</div><div class="ls">Partner Compliance</div></div></div>
-      <nav class="nav">${tabs.map(([t,l])=>`<button class="nb ${state.tab===t?'active':''}" onclick="setTab('${t}')" data-tip="${t==='overview'?'Tableau de bord global':t==='charts'?'Graphiques et statistiques':t==='partners'?'Fiches partenaires':t==='obligations'?'Obligations contractuelles':t==='settings'?'Paramètres de l\'application':t==='users'?'Gérer les utilisateurs':'Centre d\'aide'}">${l}</button>`).join('')}</nav>
-      <div class="hr">
-        ${state.saveMsg?`<span class="sm" style="color:${state.saveMsgColor||'#22c55e'}">${state.saveMsg}</span>`:''}
-        <span class="rb ${rc}" data-tip="Votre niveau d'accès">${rl}</span>
-        <span style="font-size:11px;color:#888">${state.auth.username}</span>
-        ${isA()?`<button class="addb" onclick="openAdd()" data-tip="Ajouter un nouveau partenaire">+ Partenaire</button>`:''}
-        <button class="lout" onclick="logout()" data-tip="Se déconnecter">Déconnexion</button>
-      </div>
-    </div></div>
-    ${isRO()?`<div class="rob">👁️ Mode consultation — ${isP()?'Vous voyez uniquement vos données':'Vue générale — aucune modification possible'}</div>`:''}
-    <div class="main">
-      ${state.tab==='overview'?bOv(di,tot,conf,part,nc,avg):''}
-      ${state.tab==='charts'?bCharts(en):''}
-      ${state.tab==='partners'?bPa(di):''}
-      ${state.tab==='obligations'?bOb():''}
-      ${state.tab==='settings'&&isA()?bSe():''}
-      ${state.tab==='users'&&isA()?bUs():''}
-      ${state.tab==='help'?bHelp():''}
-    </div>
-    ${state.modal==='edit'?bEditM():''}
-    ${state.modal==='add'?bAddM():''}
-    ${state.modal==='adduser'?bAddUM():''}
-    ${state.modal==='edituser'?bEditUM():''}
-  `;
-}
-
-function bLogin(){return`
-  <div class="lw"><div class="lb">
-    <div style="text-align:center;margin-bottom:28px">
-      <div style="width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#c8860a,#f0a500);display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:#1a0800;font-size:22px;margin-bottom:10px">S</div>
-      <div style="font-weight:800;font-size:18px;color:#fff">SEA<span style="color:#d4a800">•</span>KEBAB</div>
-      <div style="font-size:11px;color:#777;letter-spacing:.1em;text-transform:uppercase;margin-top:2px">Partner Compliance Dashboard</div>
-    </div>
-    <div class="lerr" id="lerr"></div>
-    <label style="margin-top:0">Identifiant</label>
-    <input class="li" type="text" id="lu" placeholder="Votre identifiant" autocomplete="username">
-    <label>Mot de passe</label>
-    <input class="li" type="password" id="lp" placeholder="••••••••" autocomplete="current-password">
-    <button class="lbtn" onclick="doLogin()">Se connecter</button>
-    <div style="margin-top:16px;padding:10px 12px;background:rgba(255,255,255,.02);border-radius:8px;font-size:11px;color:#555;text-align:center;border:1px solid rgba(255,255,255,.05)">
-      🔒 Accès réservé aux partenaires SEA•KEBAB<br>
-      <span style="font-size:10px;color:#444;margin-top:3px;display:block">Contactez votre administrateur pour vos identifiants</span>
-    </div>
-  </div></div>
-`}
-
-function bOv(di,tot,conf,part,nc,avg){
-  const fi=[['all','Tous'],['platinum','Platinum'],['gold','Gold'],['silver','Silver']];
-  return`
-    ${isA()||state.auth?.role==='viewer'?`
-    <div class="eg2">
-      <button class="eb eb-csv" onclick="exportCSV()" data-tip="Exporter les données en CSV (Excel, LibreOffice)">📄 Export CSV</button>
-      <button class="eb eb-xls" onclick="exportXLS()" data-tip="Exporter en fichier Excel .xlsx">📊 Export Excel</button>
-      <button class="eb eb-pdf" onclick="exportPDF()" data-tip="Générer un rapport PDF imprimable">📋 Export PDF</button>
-    </div>`:''}
-    <div class="kg">
-      ${[['Total',tot,'#d4a800','actifs ce mois','Nombre total de partenaires'],['Conformes',conf,'#22c55e','score ≥ 80','Partenaires qui respectent toutes leurs obligations'],['Partiels',part,'#f59e0b','score 60–79','Partenaires qui respectent partiellement leurs obligations'],['Non conformes',nc,'#ef4444','score < 60','Partenaires qui ne respectent pas leurs obligations'],['Score moyen',avg+'%','#818cf8','toutes plateformes','Score de conformité moyen sur tous les partenaires']].map(([l,v,c,s,tip])=>`<div class="kc" style="border-left-color:${c}" data-tip="${tip}"><div class="kl">${l}</div><div class="kv" style="color:${c}">${v}</div><div class="ks">${s}</div></div>`).join('')}
-    </div>
-    <div class="cg" style="margin-bottom:22px">
-      <div class="cc"><div class="ct">Scores par plateforme</div><canvas id="ch1" height="120"></canvas></div>
-      <div class="cc"><div class="ct">Distribution des grades</div><canvas id="ch2" height="120"></canvas></div>
-    </div>
-    <div class="tc">
-      <div class="th">
-        <div class="tt">Tableau de conformité · <span style="color:#555;font-weight:400;font-size:11px">${di.length} partenaire${di.length>1?'s':''}</span></div>
-        <div class="fi">${fi.map(([v,l])=>`<button class="fb ${state.filter===v?'active':''}" onclick="setFilter('${v}')" data-tip="Filtrer par grade ${l}">${l}</button>`).join('')}</div>
-      </div>
-      <div style="overflow-x:auto"><table>
-        <thead><tr><th>Partenaire</th><th>Grade</th><th>Instagram</th><th>TikTok</th><th>Facebook</th><th>Global</th><th>Statut</th>${isA()?'<th>Actions</th>':''}</tr></thead>
-        <tbody>
-          ${di.map(p=>`<tr>
-            <td><div class="pi"><div class="av" style="background:${GS[p.grade].c}20;border:1px solid ${GS[p.grade].c}60;color:${GS[p.grade].c}">${p.avatar}</div><div><div class="pn">${p.name}</div><div class="pc">${p.city}</div></div></div></td>
-            <td>${gbadge(p.grade)}</td>
-            ${PL.map(pl=>`<td><div>${ring(p.comp.pp[pl],34)}</div>${p.accounts?.[pl]?`<div style="margin-top:3px">${socialLink(pl,p.accounts[pl])}</div>`:''}</td>`).join('')}
-            <td>${ring(p.comp.g,42)}</td>
-            <td><span class="st" style="background:${sc(p.comp.g)}18;color:${sc(p.comp.g)};border-color:${sc(p.comp.g)}40">${sl(p.comp.g)}</span></td>
-            ${isA()?`<td><div class="ab"><button class="be" onclick="openEdit(${p.id})" data-tip="Modifier les données de ce partenaire">✏️ Éditer</button><button class="bd" onclick="delPart(${p.id})" data-tip="Supprimer définitivement ce partenaire">🗑</button></div></td>`:''}
-          </tr>`).join('')}
-          ${di.length===0?`<tr><td colspan="8" style="text-align:center;color:#555;padding:30px">Aucun partenaire pour ce filtre.</td></tr>`:''}
-        </tbody>
-      </table></div>
-    </div>
-  `;
-}
-
-function bCharts(en){
-  const di=en.filter(p=>state.filter==='all'||p.grade===state.filter);
-  return`
-    ${isA()||state.auth?.role==='viewer'?`
-    <div class="eg2">
-      <button class="eb eb-csv" onclick="exportCSV()" data-tip="Exporter en CSV">📄 CSV</button>
-      <button class="eb eb-xls" onclick="exportXLS()" data-tip="Exporter en Excel">📊 Excel</button>
-      <button class="eb eb-pdf" onclick="exportPDF()" data-tip="Exporter en PDF">📋 PDF</button>
-    </div>`:''}
-    <div class="fi" style="margin-bottom:16px">${[['all','Tous'],['platinum','Platinum'],['gold','Gold'],['silver','Silver']].map(([v,l])=>`<button class="fb ${state.filter===v?'active':''}" onclick="setFilter('${v}')">${l}</button>`).join('')}</div>
-    <div class="cg">
-      <div class="cc" style="grid-column:1/-1"><div class="ct">Scores de conformité par partenaire et plateforme</div><canvas id="ch1" height="80"></canvas></div>
-    </div>
-    <div class="cg">
-      <div class="cc"><div class="ct">Répartition par grade</div><canvas id="ch2" height="180"></canvas></div>
-      <div class="cc"><div class="ct">Conformité globale</div><canvas id="ch3" height="180"></canvas></div>
-    </div>
-  `;
-}
-
-function bPa(di){return`
-  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center">
-    ${[['all','Tous'],['platinum','✦ Platinum'],['gold','★ Gold'],['silver','◆ Silver']].map(([v,l])=>`<button class="fb ${state.filter===v?'active':''}" onclick="setFilter('${v}')">${l}</button>`).join('')}
-    ${isA()||state.auth?.role==='viewer'?`<div style="margin-left:auto;display:flex;gap:8px"><button class="eb eb-csv" onclick="exportCSV()" data-tip="Export CSV" style="padding:5px 10px;font-size:11px">📄 CSV</button><button class="eb eb-xls" onclick="exportXLS()" data-tip="Export Excel" style="padding:5px 10px;font-size:11px">📊 XLS</button><button class="eb eb-pdf" onclick="exportPDF()" data-tip="Export PDF" style="padding:5px 10px;font-size:11px">📋 PDF</button></div>`:''}
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">
+    <div class="nav-logo-mark">S</div>
+    <div class="nav-name">SEA<span>•</span>KEBAB</div>
   </div>
-  <div class="pcg">
-    ${di.map(p=>{const gs=GS[p.grade];return`
-      <div class="pcd" style="border-color:${gs.c}50">
-        <div class="cto">
-          <div style="display:flex;gap:9px;align-items:center">
-            <div class="av" style="width:38px;height:38px;border-radius:50%;background:${gs.c}28;border:2px solid ${gs.c};color:${gs.c};font-size:11px">${p.avatar}</div>
-            <div><div style="font-weight:700;color:#fff;font-size:13px">${p.name}</div><div style="font-size:10px;color:#777">${p.city}</div></div>
-          </div>${ring(p.comp.g,42)}
-        </div>
-        ${gbadge(p.grade)}
-        <div class="cac">
-          ${PL.map(pl=>`<div class="ar"><div class="dot" style="background:${PC[pl]}"></div>${socialLink(pl,p.accounts?.[pl])}</div>`).join('')}
-        </div>
-        <div class="ps">
-          ${PL.map(pl=>`<div class="psb" data-tip="Score ${pl}: ${p.comp.pp[pl]}/100"><div style="width:6px;height:6px;border-radius:50%;background:${PC[pl]};margin:0 auto 3px"></div><div style="font-size:13px;font-weight:700;color:${sc(p.comp.pp[pl])}">${p.comp.pp[pl]}</div><div style="font-size:8px;color:#666">${pl.slice(0,2)}</div></div>`).join('')}
-        </div>
-        ${pbar(p.comp.g,100)}
-        <div style="display:flex;justify-content:space-between;margin-top:5px;margin-bottom:${isA()?'10':'0'}px">
-          <span style="font-size:9px;color:#666">Conformité globale</span>
-          <span style="font-size:9px;color:${sc(p.comp.g)};font-weight:700">${sl(p.comp.g)}</span>
-        </div>
-        ${isA()?`<div class="cbts"><button class="be" style="flex:1;padding:5px" onclick="openEdit(${p.id})" data-tip="Modifier ce partenaire">✏️ Éditer</button><button class="bd" style="padding:5px 8px" onclick="delPart(${p.id})" data-tip="Supprimer ce partenaire">🗑</button></div>`:''}
-      </div>
-    `;}).join('')}
+  <div class="nav-links">
+    <a href="#manifesto">La Vision</a>
+    <a href="#pillars">Les Acteurs</a>
+    <a href="#grades">Les Grades</a>
+    <a href="#charter">La Charte</a>
   </div>
-`}
+  <a href="index.html" class="nav-cta">Accéder au Dashboard</a>
+</nav>
 
-function bOb(){return`
-  <div class="og">
-    ${['platinum','gold','silver'].map(grade=>{const gs=GS[grade],ob=state.settings[grade],pl=state.partners.filter(p=>p.grade===grade);return`
-      <div class="oc" style="background:${gs.c}12;border:1px solid ${gs.c}40">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px">
-          <div style="width:34px;height:34px;border-radius:50%;background:${gs.c}20;border:2px solid ${gs.c};display:flex;align-items:center;justify-content:center;font-size:14px;color:${gs.c}">${gs.i}</div>
-          <div><div style="font-weight:800;font-size:15px;color:${gs.c};text-transform:uppercase">${gs.l}</div><div style="font-size:10px;color:#888">Obligations mensuelles</div></div>
-        </div>
-        ${[['📝','Posts originaux',ob.posts_month,'/mois','Nombre de posts originaux à publier par mois'],['🔁','Reposts',ob.reposts_month,'/mois','Nombre de reposts minimum par mois'],['📤','Republications',ob.republish_month,'/mois','Nombre de republications minimum par mois'],['🏷️','Tag '+state.settings.brand_tag,'Obligatoire','','Le tag de marque doit figurer sur chaque post'],['⭐','Qualité minimum',ob.quality_min,'/100','Score de qualité minimum requis']].map(([ic,lb,vl,u,tip])=>`<div class="or" data-tip="${tip}"><span style="color:#ccc">${ic} ${lb}</span><span style="font-weight:700;color:${gs.c};font-size:12px">${vl}${u}</span></div>`).join('')}
-        <div style="margin-top:11px;padding:8px 10px;background:rgba(255,255,255,.04);border-radius:8px">
-          <div style="font-size:9px;color:#888;margin-bottom:5px">Partenaires (${pl.length})</div>
-          <div style="display:flex;flex-wrap:wrap;gap:4px">${pl.length===0?`<span style="font-size:10px;color:#555">Aucun</span>`:pl.map(p=>`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:${gs.c}15;border:1px solid ${gs.c}30;color:${gs.c}">${p.name}</span>`).join('')}</div>
-        </div>
-      </div>
-    `;}).join('')}
-  </div>
-`}
-
-function bSe(){const s=state.settings;return`
-  <div class="ss"><div class="stl">🏷️ Tag de marque obligatoire</div>
-    <label>Hashtag ou mention à inclure sur tous les posts partenaires</label>
-    <input type="text" id="brand_tag" value="${s.brand_tag}" placeholder="@seakebab">
-  </div>
-  ${['platinum','gold','silver'].map(g=>{const gs=GS[g],ob=s[g];return`
-    <div class="ss" style="border-color:${gs.c}40">
-      <div class="stl" style="color:${gs.c}">${gs.i} ${gs.l.toUpperCase()} — Obligations mensuelles</div>
-      ${[['posts_month','📝 Posts originaux / mois',30,'Nombre minimum de posts originaux que le partenaire doit publier'],['reposts_month','🔁 Reposts / mois',20,'Nombre minimum de reposts que le partenaire doit effectuer'],['republish_month','📤 Republications / mois',20,'Nombre minimum de republications que le partenaire doit faire'],['quality_min','⭐ Score qualité minimum (/100)',100,'Score de qualité minimum requis pour les posts du partenaire']].map(([f,l,mx,tip])=>`
-        <div style="margin-bottom:14px" data-tip="${tip}">
-          <div class="sr2"><span style="font-size:12px;color:#ccc">${l}</span><span style="font-weight:700;color:${gs.c};font-size:14px" id="v_${g}_${f}">${ob[f]}</span></div>
-          <input type="range" min="0" max="${mx}" value="${ob[f]}" style="accent-color:${gs.c}" oninput="document.getElementById('v_${g}_${f}').textContent=this.value" data-grade="${g}" data-field="${f}">
-        </div>
-      `).join('')}
-    </div>
-  `;}).join('')}
-  <button class="sv" onclick="saveSeForm()" data-tip="Sauvegarder tous les paramètres">💾 Sauvegarder les paramètres</button>
-`}
-
-function bUs(){return`
-  <div class="ss">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
-      <div class="stl" style="margin-bottom:0">👥 Gestion des utilisateurs</div>
-      <button class="addb" onclick="openAddU()" data-tip="Créer un nouvel utilisateur">+ Utilisateur</button>
-    </div>
-    <table class="ut">
-      <thead><tr><th>Identifiant</th><th>Rôle</th><th>Partenaire lié</th><th>Actions</th></tr></thead>
-      <tbody>${state.users.map(u=>{const lk=u.partnerId?state.partners.find(p=>p.id===u.partnerId):null;const rc=u.role==='admin'?'ra':u.role==='viewer'?'rv':'rp';return`
-        <tr>
-          <td style="color:#fff;font-weight:600">${u.username}</td>
-          <td><span class="rb ${rc}">${u.role}</span></td>
-          <td style="color:#888;font-size:12px">${lk?`<span style="color:${GS[lk.grade].c}">${lk.name}</span>`:'—'}</td>
-          <td><div style="display:flex;gap:6px">
-            <button class="be" onclick="openEditU(${u.id})" data-tip="Modifier le rôle ou le mot de passe">✏️ Modifier</button>
-            ${u.id!==1?`<button class="bd" onclick="delUser(${u.id})" data-tip="Supprimer cet utilisateur">🗑</button>`:`<span style="color:#555;font-size:11px">Compte principal</span>`}
-          </div></td>
-        </tr>
-      `;}).join('')}</tbody>
-    </table>
-    <div style="margin-top:16px;padding:14px;background:rgba(255,255,255,.03);border-radius:9px;font-size:11px">
-      <div style="color:#d4a800;font-weight:700;margin-bottom:8px">📖 Guide des rôles</div>
-      <div style="color:#aaa;margin-bottom:4px">👑 <strong style="color:#d4a800">admin</strong> — Accès complet : voir, créer, modifier, supprimer tout. Gérer les utilisateurs. Exporter les données.</div>
-      <div style="color:#aaa;margin-bottom:4px">👁️ <strong style="color:#818cf8">viewer</strong> — Vue d'ensemble de tous les partenaires. Lecture seule. Peut exporter les données.</div>
-      <div style="color:#aaa">🏪 <strong style="color:#22c55e">partner</strong> — Voit uniquement ses propres statistiques. Ne peut pas modifier ni supprimer.</div>
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-glow"></div>
+  <div>
+    <div class="hero-tag">Partner Compliance System</div>
+    <h1 class="hero-title">
+      L'EXCELLENCE<br>
+      <em>N'EST PAS</em><br>
+      <span>UN HASARD</span>
+    </h1>
+    <p class="hero-sub">
+      Le système qui transforme chaque partenaire SEA•KEBAB en ambassadeur de marque irréprochable — et qui protège le réseau des acteurs qui ne méritent pas d'en faire partie.
+    </p>
+    <div class="hero-actions">
+      <a href="index.html" class="btn-primary">Accéder au Dashboard</a>
+      <a href="#manifesto" class="btn-secondary">Découvrir le système</a>
     </div>
   </div>
-`}
+  <div class="hero-scroll">
+    <span>Défiler</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
 
-function bHelp(){
-  const role=state.auth?.role||'viewer';
-  const sections=role==='admin'?
-    [['intro','🏠 Introduction'],['dashboard','📊 Dashboard'],['partners','👥 Partenaires'],['obligations','📋 Obligations'],['scoring','⭐ Système de score'],['users','👤 Utilisateurs'],['settings','⚙️ Paramètres'],['export','📤 Export'],['faq','❓ FAQ']]:
-    role==='viewer'?[['intro','🏠 Introduction'],['dashboard','📊 Dashboard'],['partners','👥 Partenaires'],['scoring','⭐ Système de score'],['export','📤 Export'],['faq','❓ FAQ']]:
-    [['intro','🏠 Mon Dashboard'],['scoring','⭐ Mon Score'],['social','🔗 Mes Réseaux'],['faq','❓ FAQ']];
+<!-- STATS -->
+<div class="stats">
+  <div class="stat reveal"><div class="stat-num">3</div><div class="stat-label">Grades de partenariat</div></div>
+  <div class="stat reveal reveal-delay-1"><div class="stat-num">5</div><div class="stat-label">Critères de conformité</div></div>
+  <div class="stat reveal reveal-delay-2"><div class="stat-num">3</div><div class="stat-label">Réseaux surveillés</div></div>
+  <div class="stat reveal reveal-delay-3"><div class="stat-num">100</div><div class="stat-label">Points de score max</div></div>
+</div>
 
-  const content={
-    intro: role==='admin'?`
-      <div class="hh1">Bienvenue sur SEA•KEBAB Partner Compliance</div>
-      <p class="ht">Ce dashboard vous permet de surveiller en temps réel la conformité de vos partenaires sur les réseaux sociaux Instagram, TikTok et Facebook.</p>
-      <div class="hh2">Vos capacités en tant qu'Admin</div>
-      <div class="hbox">✅ Voir tous les partenaires et leurs scores<br>✅ Ajouter, modifier et supprimer des partenaires<br>✅ Configurer les obligations par grade<br>✅ Gérer les utilisateurs et leurs rôles<br>✅ Exporter les données en CSV, Excel ou PDF</div>
-      <div class="hh2">Navigation rapide</div>
-      <p class="ht">Utilisez les onglets en haut pour naviguer entre les sections. Passez la souris sur les éléments pour voir des infobulles explicatives.</p>
-    `:role==='viewer'?`
-      <div class="hh1">Bienvenue sur SEA•KEBAB Partner Compliance</div>
-      <p class="ht">Vous avez un accès en lecture seule à toutes les données de conformité des partenaires SEA•KEBAB.</p>
-      <div class="hbox">👁️ Vous pouvez voir toutes les données<br>👁️ Vous pouvez exporter les rapports<br>🔒 Vous ne pouvez pas modifier les données</div>
-    `:`
-      <div class="hh1">Bienvenue sur votre Dashboard Partenaire</div>
-      <p class="ht">Ce tableau de bord vous permet de suivre vos propres performances sur les réseaux sociaux et votre niveau de conformité avec vos obligations contractuelles SEA•KEBAB.</p>
-      <div class="hbox">👁️ Vous voyez uniquement vos propres données<br>🔒 Vos données sont gérées par l'équipe SEA•KEBAB</div>
-    `,
-    dashboard:`
-      <div class="hh1">Vue d'ensemble — Dashboard</div>
-      <div class="hh2">Les KPIs en haut</div>
-      <p class="ht">Les 5 cartes en haut du dashboard vous donnent un aperçu instantané : nombre total de partenaires, combien sont conformes (score ≥80), partiels (60-79), non conformes (&lt;60), et le score moyen global.</p>
-      <div class="hh2">Le tableau de conformité</div>
-      <p class="ht">Chaque ligne représente un partenaire. Pour chaque plateforme (Instagram, TikTok, Facebook), un anneau coloré indique le score de conformité :</p>
-      <div class="hbox">🟢 Vert = Conforme (≥80/100)<br>🟡 Orange = Partiel (60-79/100)<br>🔴 Rouge = Non conforme (&lt;60/100)</div>
-      <div class="hh2">Les liens réseaux sociaux</div>
-      <p class="ht">Dans le tableau et les cartes partenaires, cliquez sur les icônes colorées pour accéder directement au compte du partenaire sur chaque réseau social.</p>
-    `,
-    scoring:`
-      <div class="hh1">Système de scoring</div>
-      <div class="hh2">Comment est calculé le score ?</div>
-      <p class="ht">Le score de conformité (0-100) est calculé automatiquement sur 5 critères :</p>
-      <div class="hbox">📝 <strong>Posts originaux</strong> — 25 points max (ratio posts publiés / posts requis)<br>🔁 <strong>Reposts</strong> — 20 points max (ratio reposts effectués / reposts requis)<br>📤 <strong>Republications</strong> — 15 points max (ratio repub. effectuées / repub. requises)<br>⭐ <strong>Score qualité</strong> — 25 points max (qualité déclarée / qualité minimum requise)<br>🏷️ <strong>Taux de tagging</strong> — 15 points max (posts tagués / posts totaux)</div>
-      <div class="hh2">Les seuils</div>
-      <p class="ht">Les obligations (nombre de posts, reposts, etc.) varient selon le grade :</p>
-      <div class="hbox">◆ <strong style="color:#C0C0C0">Silver</strong> — Niveau d'entrée, obligations légères<br>★ <strong style="color:#FFD700">Gold</strong> — Niveau intermédiaire, obligations renforcées<br>✦ <strong style="color:#b8b8ff">Platinum</strong> — Niveau premium, obligations maximales</div>
-    `,
-    partners:`
-      <div class="hh1">Gestion des Partenaires</div>
-      <div class="hh2">Ajouter un partenaire</div>
-      <p class="ht">Cliquez sur "+ Partenaire" en haut à droite. Renseignez le nom, la ville, le grade et les comptes sociaux de chaque plateforme.</p>
-      <div class="hh2">Liens sociaux</div>
-      <p class="ht">Dans chaque fiche partenaire, les comptes sociaux apparaissent sous forme de liens cliquables. Cliquez dessus pour ouvrir le profil directement dans un nouvel onglet.</p>
-      <div class="hh2">Modifier un partenaire</div>
-      <p class="ht">Cliquez sur "✏️ Éditer" pour modifier toutes les informations du partenaire : grade, comptes sociaux, et métriques mensuelles.</p>
-      <div class="hbox">⚠️ Mettez à jour les métriques chaque mois pour maintenir des scores précis.</div>
-    `,
-    obligations:`
-      <div class="hh1">Obligations contractuelles</div>
-      <p class="ht">Chaque grade a des obligations spécifiques. Ces obligations définissent le minimum requis chaque mois pour être considéré "Conforme".</p>
-      <div class="hh2">Modifier les obligations</div>
-      <p class="ht">En tant qu'admin, allez dans ⚙️ Paramètres pour ajuster les obligations de chaque grade. Ces modifications s'appliquent immédiatement au calcul des scores.</p>
-    `,
-    users:`
-      <div class="hh1">Gestion des utilisateurs</div>
-      <div class="hh2">Créer un utilisateur</div>
-      <p class="ht">Cliquez sur "+ Utilisateur" dans l'onglet "👥 Utilisateurs". Choisissez l'identifiant, le mot de passe et le rôle.</p>
-      <div class="hh2">Rôles disponibles</div>
-      <div class="hbox">👑 <strong style="color:#d4a800">admin</strong> — Accès complet à toutes les fonctionnalités<br>👁️ <strong style="color:#818cf8">viewer</strong> — Lecture seule de tous les partenaires<br>🏪 <strong style="color:#22c55e">partner</strong> — Accès limité à ses propres données uniquement</div>
-      <div class="hh2">Lier un partenaire à un utilisateur</div>
-      <p class="ht">Pour le rôle "partner", vous devez lier l'utilisateur à sa fiche partenaire. Ainsi, quand il se connecte, il ne voit que ses propres données.</p>
-    `,
-    settings:`
-      <div class="hh1">Paramètres de l'application</div>
-      <div class="hh2">Tag de marque</div>
-      <p class="ht">C'est le hashtag ou la mention que tous les partenaires doivent inclure dans leurs posts. Par défaut "@seakebab". Ce tag est vérifié lors du calcul du score de conformité.</p>
-      <div class="hh2">Obligations par grade</div>
-      <p class="ht">Utilisez les curseurs pour ajuster le nombre de posts, reposts, republications et le score qualité minimum requis pour chaque grade. Les modifications sont appliquées instantanément.</p>
-    `,
-    export:`
-      <div class="hh1">Export des données</div>
-      <div class="hh2">Format CSV</div>
-      <p class="ht">Idéal pour importer dans Excel, Google Sheets ou LibreOffice Calc. Contient toutes les données des partenaires avec leurs scores.</p>
-      <div class="hh2">Format Excel (.xlsx)</div>
-      <p class="ht">Fichier Excel natif avec mise en forme. Contient les données détaillées et les métriques par plateforme.</p>
-      <div class="hh2">Format PDF</div>
-      <p class="ht">Rapport professionnel imprimable avec le tableau de conformité complet, idéal pour les réunions ou l'archivage.</p>
-      <div class="hbox">💡 Les boutons d'export se trouvent en haut de la Vue d'ensemble et de l'onglet Partenaires.</div>
-    `,
-    social:`
-      <div class="hh1">Vos réseaux sociaux</div>
-      <p class="ht">Dans votre dashboard, vous pouvez voir les comptes sociaux qui vous ont été attribués par l'équipe SEA•KEBAB. Pour modifier vos informations, contactez votre responsable SEA•KEBAB.</p>
-      <div class="hh2">Vos obligations</div>
-      <p class="ht">Consultez l'onglet "Obligations" pour voir exactement ce que vous devez publier chaque mois selon votre grade.</p>
-    `,
-    faq:`
-      <div class="hh1">Questions fréquentes</div>
-      <div class="hh2">Mon score est rouge, que faire ?</div>
-      <p class="ht">Un score rouge (&lt;60) signifie que vous ne respectez pas vos obligations contractuelles. Vérifiez le nombre de posts, reposts et le taux de tagging requis pour votre grade.</p>
-      <div class="hh2">Comment sont calculées les métriques ?</div>
-      <p class="ht">Les métriques sont actuellement saisies manuellement par l'équipe SEA•KEBAB chaque mois. Une intégration automatique avec les APIs des réseaux sociaux est en cours de développement.</p>
-      <div class="hh2">Je ne vois pas mes données</div>
-      <p class="ht">Si vous êtes connecté en tant que partenaire et que vous ne voyez pas vos données, contactez votre responsable pour qu'il vérifie que votre compte est bien lié à votre fiche partenaire.</p>
-      <div class="hh2">Comment changer mon mot de passe ?</div>
-      <p class="ht">Contactez un administrateur SEA•KEBAB pour changer votre mot de passe.</p>
-    `,
-  };
+<div class="divider"></div>
 
-  return`
-    <div class="hg">
-      <div class="hm">
-        <div style="font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">Sections d'aide</div>
-        ${sections.map(([k,l])=>`<div class="hmi ${state.helpSection===k?'active':''}" onclick="setHelp('${k}')">${l}</div>`).join('')}
+<!-- MANIFESTO -->
+<section class="manifesto" id="manifesto">
+  <div class="max">
+    <div class="manifesto-grid">
+      <div>
+        <div class="section-tag">La Vision</div>
+        <h2 class="section-title reveal">UN RÉSEAU QUI NE TOLÈRE QUE L'EXCELLENCE</h2>
+        <blockquote class="manifesto-quote reveal reveal-delay-1">
+          "Être partenaire SEA•KEBAB, ce n'est pas un titre. C'est un engagement quotidien envers une marque, des clients et des standards qui ne souffrent aucun compromis."
+        </blockquote>
       </div>
-      <div class="hc">${content[state.helpSection]||content['intro']}</div>
+      <div class="manifesto-text reveal reveal-delay-2">
+        <div class="section-tag">Pourquoi ce système</div>
+        <p class="section-body">SEA•KEBAB a bâti son positionnement sur un triptyque : <strong style="color:var(--text)">qualité du produit, force de la marque, engagement des partenaires</strong>. Les deux premiers piliers dépendent de l'enseigne. Le troisième dépend du réseau.</p>
+        <br>
+        <p class="section-body">Ce système de compliance existe pour une raison simple : <strong style="color:var(--gold)">vous ne pouvez pas construire une marque premium avec des partenaires qui n'en respectent pas les codes.</strong> Chaque post non publié, chaque tag manquant, chaque repost oublié érode l'image collective.</p>
+        <br>
+        <p class="section-body">Le SEA•KEBAB Partner Compliance Dashboard n'est pas un outil de surveillance. C'est un <strong style="color:var(--text)">système de protection de la valeur</strong> — pour la marque, pour les partenaires exemplaires, pour les grossistes qui investissent dans ce réseau.</p>
+      </div>
     </div>
-  `;
-}
+  </div>
+</section>
 
-function bEditM(){
-  const p=state.partners.find(x=>x.id===state.editId);if(!p)return'';
-  const ob=state.settings[p.grade];
-  return`
-    <div class="mo" onclick="closeM()"><div class="md" onclick="event.stopPropagation()">
-      <div class="mh"><div class="mt">✏️ Éditer — ${p.name}</div><button class="cb" onclick="closeM()">✕</button></div>
-      <div class="sc"><div class="stl">Informations générales</div>
-        <label>Nom</label><input type="text" id="en" value="${p.name}">
-        <label>Ville</label><input type="text" id="ec" value="${p.city}">
-        <label>Grade</label><div class="gb">
-          ${['silver','gold','platinum'].map(g=>`<button class="gs" id="eg_${g}" onclick="selG('${g}')" style="border-color:${p.grade===g?GS[g].c:'rgba(255,255,255,.1)'};background:${p.grade===g?GS[g].c+'20':'transparent'};color:${p.grade===g?GS[g].c:'#666'}" data-tip="Grade ${GS[g].l}">${GS[g].i} ${GS[g].l}</button>`).join('')}
+<div class="divider"></div>
+
+<!-- PILLARS -->
+<section class="pillars" id="pillars">
+  <div class="max">
+    <div class="section-tag reveal">Les trois acteurs</div>
+    <h2 class="section-title reveal">QUI BÉNÉFICIE<br>DE CE SYSTÈME ?</h2>
+    <div class="pillars-grid">
+
+      <!-- MARQUE -->
+      <div class="pillar reveal">
+        <div class="pillar-content">
+          <div class="pillar-num">01</div>
+          <div class="pillar-icon">🏷️</div>
+          <h3 class="pillar-title">La Marque SEA•KEBAB</h3>
+          <div class="pillar-divider"></div>
+          <p class="pillar-body">SEA•KEBAB investit dans sa notoriété, son image, ses codes visuels et son positionnement premium. Chaque partenaire est un relais de cette identité sur les réseaux sociaux. Sans contrôle, cette image se dilue, se dégrade, se contredit.</p>
+          <ul class="pillar-points">
+            <li>Visibilité de marque uniforme et maîtrisée sur tous les réseaux</li>
+            <li>Protection de l'identité visuelle et des codes de communication</li>
+            <li>Amplification organique via les comptes partenaires actifs</li>
+            <li>Preuve de qualité du réseau face aux prospects et investisseurs</li>
+            <li>Outil d'exclusion des partenaires nuisibles à la marque</li>
+            <li>Tableau de bord en temps réel pour décisions commerciales rapides</li>
+          </ul>
         </div>
       </div>
-      <div class="sc"><div class="stl">Comptes sociaux</div>
-        ${PL.map(pl=>`<label style="color:${PC[pl]}">${pl}</label><input type="text" id="ea_${pl}" value="${p.accounts?.[pl]||''}" placeholder="${pl==='Facebook'?'Nom de la page':'@nomducompte'}">`).join('')}
-        <p style="font-size:11px;color:#666;margin-top:8px">Tag obligatoire : <strong style="color:#d4a800">${state.settings.brand_tag}</strong></p>
+
+      <!-- PARTENAIRES -->
+      <div class="pillar reveal reveal-delay-1">
+        <div class="pillar-content">
+          <div class="pillar-num">02</div>
+          <div class="pillar-icon">🍖</div>
+          <h3 class="pillar-title">Les Partenaires Restaurants</h3>
+          <div class="pillar-divider"></div>
+          <p class="pillar-body">Un restaurant partenaire SEA•KEBAB bénéficie d'une marque forte, d'un réseau qualifié et d'une visibilité renforcée. En contrepartie, il s'engage à promouvoir activement cette marque. Ce système récompense les partenaires sérieux et pénalise les passagers clandestins.</p>
+          <ul class="pillar-points">
+            <li>Accès à la notoriété et au positionnement premium de SEA•KEBAB</li>
+            <li>Visibilité dans le réseau national des partenaires certifiés</li>
+            <li>Support marketing, contenus et assets visuels fournis</li>
+            <li>Score de performance visible et améliorable chaque mois</li>
+            <li>Montée en grade = accès à plus d'avantages et de visibilité</li>
+            <li>Transparence totale sur les obligations contractuelles</li>
+          </ul>
+        </div>
       </div>
-      <div style="font-weight:700;font-size:10px;color:#d4a800;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px">MÉTRIQUES DU MOIS</div>
-      <p style="font-size:11px;color:#888;margin-bottom:12px">Seuils ${p.grade} · ${ob.posts_month} posts · ${ob.reposts_month} reposts · ${ob.republish_month} repub. · Qualité ≥${ob.quality_min}</p>
-      ${PL.map(pl=>`
-        <div class="sc" style="margin-bottom:10px">
-          <div style="font-size:13px;font-weight:700;color:${PC[pl]};margin-bottom:11px">● ${pl}</div>
-          <div class="mg">
-            ${[['posts','Posts',ob.posts_month],['reposts','Reposts',ob.reposts_month],['republish','Repub.',ob.republish_month],['tagged','Tagués',ob.posts_month],['quality','Qualité',100]].map(([f,l,mx])=>`<div><div style="font-size:10px;color:#777;margin-bottom:4px">${l}</div><input type="number" id="em_${pl}_${f}" min="0" max="${f==='quality'?100:50}" value="${p.metrics[pl][f]}">${pbar(p.metrics[pl][f],mx)}</div>`).join('')}
+
+      <!-- GROSSISTES -->
+      <div class="pillar reveal reveal-delay-2">
+        <div class="pillar-content">
+          <div class="pillar-num">03</div>
+          <div class="pillar-icon">🚛</div>
+          <h3 class="pillar-title">Les Grossistes & Distributeurs</h3>
+          <div class="pillar-divider"></div>
+          <p class="pillar-body">Les grossistes qui s'associent à SEA•KEBAB ont besoin de s'appuyer sur un réseau fiable et actif. Ce système leur garantit que les partenaires qu'ils approvisionnent sont des acteurs engagés, visibles et conformes — et non des restaurants dormants qui ne font pas rayonner la marque.</p>
+          <ul class="pillar-points">
+            <li>Réseau qualifié d'enseignes actives et visibles en ligne</li>
+            <li>Ciblage des partenaires par grade pour offres préférentielles</li>
+            <li>Preuve de sérieux du réseau pour négociations commerciales</li>
+            <li>Remontée d'informations sur les partenaires performants</li>
+            <li>Base de données structurée pour actions marketing B2B</li>
+            <li>Valorisation des investissements distribution via la conformité</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- GRADES -->
+<section class="grades" id="grades">
+  <div class="max">
+    <div class="grades-intro">
+      <div>
+        <div class="section-tag reveal">Le système de grades</div>
+        <h2 class="section-title reveal">TROIS NIVEAUX.<br>UN SEUL STANDARD.</h2>
+      </div>
+      <div class="reveal reveal-delay-1">
+        <p class="section-body">Le grade d'un partenaire n'est pas une distinction honorifique. C'est le reflet de son engagement réel, mesuré chaque mois sur trois plateformes, selon cinq critères objectifs. Il se gagne, il se maintient, il se perd.</p>
+      </div>
+    </div>
+    <div class="grades-cards">
+
+      <div class="grade-card grade-silver reveal">
+        <div class="grade-bg"></div>
+        <div class="grade-content">
+          <span class="grade-icon">◆</span>
+          <div class="grade-name">Silver</div>
+          <div class="grade-tagline">Le point d'entrée dans le réseau SEA•KEBAB</div>
+          <ul class="grade-obligations">
+            <li>Posts originaux / mois<span><strong>4</strong> min.</span></li>
+            <li>Reposts / mois<span><strong>2</strong> min.</span></li>
+            <li>Republications / mois<span><strong>1</strong> min.</span></li>
+            <li>Score qualité minimum<span><strong>60</strong>/100</span></li>
+            <li>Tag SEA•KEBAB<span><strong>Obligatoire</strong></span></li>
+          </ul>
+          <div style="margin-top:24px;padding:12px;background:rgba(184,184,200,.05);border-left:2px solid var(--silver);font-size:12px;color:var(--text-muted);line-height:1.6">
+            Niveau d'accès au réseau. Les partenaires Silver bénéficient du socle des avantages SEA•KEBAB et ont 90 jours pour consolider leur engagement.
           </div>
         </div>
-      `).join('')}
-      <button class="sv" onclick="subEdit(${p.id})">💾 Enregistrer les modifications</button>
-      <button class="cv" onclick="closeM()">Annuler</button>
-    </div></div>
-  `;
-}
+      </div>
 
-function bAddM(){return`
-  <div class="mo" onclick="closeM()"><div class="md" onclick="event.stopPropagation()" style="max-width:460px">
-    <div class="mh"><div class="mt">➕ Nouveau Partenaire</div><button class="cb" onclick="closeM()">✕</button></div>
-    <label>Nom du restaurant *</label><input type="text" id="an" placeholder="Ex: Le Sultan">
-    <label>Ville</label><input type="text" id="ac" placeholder="Ex: Paris 18e">
-    <label>Grade</label><div class="gb">
-      ${['silver','gold','platinum'].map((g,i)=>`<button class="gs" id="ag_${g}" onclick="selAG('${g}')" style="border-color:${i===0?GS[g].c:'rgba(255,255,255,.1)'};background:${i===0?GS[g].c+'20':'transparent'};color:${i===0?GS[g].c:'#666'}">${GS[g].i} ${GS[g].l}</button>`).join('')}
+      <div class="grade-card grade-gold reveal reveal-delay-1">
+        <div class="grade-bg"></div>
+        <div class="grade-content">
+          <span class="grade-icon">★</span>
+          <div class="grade-name">Gold</div>
+          <div class="grade-tagline">L'engagement confirmé, la visibilité renforcée</div>
+          <ul class="grade-obligations">
+            <li>Posts originaux / mois<span><strong>8</strong> min.</span></li>
+            <li>Reposts / mois<span><strong>4</strong> min.</span></li>
+            <li>Republications / mois<span><strong>2</strong> min.</span></li>
+            <li>Score qualité minimum<span><strong>70</strong>/100</span></li>
+            <li>Tag SEA•KEBAB<span><strong>Obligatoire</strong></span></li>
+          </ul>
+          <div style="margin-top:24px;padding:12px;background:rgba(212,168,0,.05);border-left:2px solid var(--gold);font-size:12px;color:var(--text-muted);line-height:1.6">
+            Partenaire actif et engagé. Les partenaires Gold sont mis en avant dans les communications SEA•KEBAB et bénéficient d'avantages distributeurs préférentiels.
+          </div>
+        </div>
+      </div>
+
+      <div class="grade-card grade-platinum reveal reveal-delay-2">
+        <div class="grade-bg"></div>
+        <div class="grade-content">
+          <span class="grade-icon">✦</span>
+          <div class="grade-name">Platinum</div>
+          <div class="grade-tagline">L'excellence absolue, le sommet du réseau</div>
+          <ul class="grade-obligations">
+            <li>Posts originaux / mois<span><strong>12</strong> min.</span></li>
+            <li>Reposts / mois<span><strong>6</strong> min.</span></li>
+            <li>Republications / mois<span><strong>3</strong> min.</span></li>
+            <li>Score qualité minimum<span><strong>80</strong>/100</span></li>
+            <li>Tag SEA•KEBAB<span><strong>Obligatoire</strong></span></li>
+          </ul>
+          <div style="margin-top:24px;padding:12px;background:rgba(184,184,255,.05);border-left:2px solid var(--platinum);font-size:12px;color:var(--text-muted);line-height:1.6">
+            Ambassadeur de marque premium. Les partenaires Platinum sont les vitrines du réseau SEA•KEBAB et accèdent aux programmes exclusifs de co-marketing et de développement.
+          </div>
+        </div>
+      </div>
+
     </div>
-    <div style="margin-top:16px"><div style="font-size:10px;color:#d4a800;font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">Comptes sociaux</div>
-      ${PL.map(pl=>`<label style="color:${PC[pl]}">${pl}</label><input type="text" id="aa_${pl}" placeholder="${pl==='Facebook'?'Nom de la page':'@nomducompte'}">`).join('')}
-      <p style="font-size:11px;color:#666;margin-top:8px">Tag obligatoire : <strong style="color:#d4a800">${state.settings.brand_tag}</strong></p>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- SCORING -->
+<section class="scoring" id="scoring">
+  <div class="max">
+    <div class="section-tag reveal">Le calcul du score</div>
+    <h2 class="section-title reveal">UN SCORE.<br>CINQ VÉRITÉS.</h2>
+    <div class="scoring-grid">
+      <div>
+        <p class="section-body reveal">Le score de conformité est calculé automatiquement, chaque mois, sur la base de cinq critères objectifs et pondérés. Aucune subjectivité. Aucun favoritisme. Juste les faits.</p>
+        <div class="score-status" style="margin-top:40px">
+          <div class="status-item status-conforme reveal">
+            <div class="status-dot"></div>
+            <div>
+              <div class="status-label">Conforme — 80 à 100</div>
+              <div class="status-desc">Le partenaire respecte l'intégralité de ses obligations. Son grade est maintenu et sécurisé.</div>
+            </div>
+          </div>
+          <div class="status-item status-partial reveal reveal-delay-1">
+            <div class="status-dot"></div>
+            <div>
+              <div class="status-label">Partiel — 60 à 79</div>
+              <div class="status-desc">Le partenaire respecte partiellement ses engagements. Mise en demeure formelle. 60 jours pour se redresser.</div>
+            </div>
+          </div>
+          <div class="status-item status-nc reveal reveal-delay-2">
+            <div class="status-dot"></div>
+            <div>
+              <div class="status-label">Non conforme — 0 à 59</div>
+              <div class="status-desc">Manquement grave aux obligations contractuelles. Procédure de déclassement ou d'exclusion du réseau engagée.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="score-rings reveal reveal-delay-1">
+        <div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:24px">Pondération des critères</div>
+        <div class="score-item">
+          <div class="score-name">Posts originaux</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:25%;background:linear-gradient(to right,#E1306C,#f06090)"></div></div>
+          <div class="score-pts">25 pts</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">Score qualité</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:25%;background:linear-gradient(to right,var(--gold-dark),var(--gold-light))"></div></div>
+          <div class="score-pts">25 pts</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">Reposts</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:20%;background:linear-gradient(to right,#69C9D0,#80dde0)"></div></div>
+          <div class="score-pts">20 pts</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">Republications</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:15%;background:linear-gradient(to right,#1877F2,#4090f8)"></div></div>
+          <div class="score-pts">15 pts</div>
+        </div>
+        <div class="score-item">
+          <div class="score-name">Taux de tagging</div>
+          <div class="score-bar-wrap"><div class="score-bar" style="width:15%;background:linear-gradient(to right,#818cf8,#a0a8ff)"></div></div>
+          <div class="score-pts">15 pts</div>
+        </div>
+        <div style="margin-top:32px;padding:20px;background:rgba(212,168,0,.04);border:1px solid rgba(212,168,0,.1);border-radius:4px">
+          <div style="font-size:11px;color:var(--text-muted);line-height:1.8">
+            Chaque critère est calculé par rapport aux <strong style="color:var(--text)">obligations propres au grade</strong> du partenaire. Un score de 80/100 pour un partenaire Platinum représente un niveau d'engagement bien supérieur à 80/100 pour un partenaire Silver.
+          </div>
+        </div>
+      </div>
     </div>
-    <button class="sv" onclick="subAdd()">Ajouter le partenaire</button>
-    <button class="cv" onclick="closeM()">Annuler</button>
-  </div></div>
-`}
+  </div>
+</section>
 
-function bAddUM(){return`
-  <div class="mo" onclick="closeM()"><div class="md" onclick="event.stopPropagation()" style="max-width:440px">
-    <div class="mh"><div class="mt">👤 Nouvel Utilisateur</div><button class="cb" onclick="closeM()">✕</button></div>
-    <label>Identifiant *</label><input type="text" id="uu" placeholder="Ex: sultan_grill">
-    <label>Mot de passe *</label><input type="password" id="up" placeholder="Choisir un mot de passe sécurisé">
-    <label>Rôle</label>
-    <select id="ur">
-      <option value="viewer">👁️ Viewer — Vue générale, lecture seule</option>
-      <option value="partner">🏪 Partner — Ses propres stats uniquement</option>
-      <option value="admin">👑 Admin — Accès complet</option>
-    </select>
-    <label>Partenaire lié (obligatoire si rôle Partner)</label>
-    <select id="upid"><option value="">— Aucun —</option>${state.partners.map(p=>`<option value="${p.id}">${p.name} (${GS[p.grade].l})</option>`).join('')}</select>
-    <button class="sv" onclick="subAddU()">Créer l'utilisateur</button>
-    <button class="cv" onclick="closeM()">Annuler</button>
-  </div></div>
-`}
+<div class="divider"></div>
 
-function bEditUM(){
-  const u=state.users.find(x=>x.id===state.editUserId);if(!u)return'';
-  return`
-    <div class="mo" onclick="closeM()"><div class="md" onclick="event.stopPropagation()" style="max-width:440px">
-      <div class="mh"><div class="mt">✏️ Modifier — ${u.username}</div><button class="cb" onclick="closeM()">✕</button></div>
-      <label>Nouveau rôle</label>
-      <select id="eur">
-        <option value="viewer" ${u.role==='viewer'?'selected':''}>👁️ Viewer</option>
-        <option value="partner" ${u.role==='partner'?'selected':''}>🏪 Partner</option>
-        <option value="admin" ${u.role==='admin'?'selected':''}>👑 Admin</option>
-      </select>
-      <label>Partenaire lié (si rôle Partner)</label>
-      <select id="eupid"><option value="">— Aucun —</option>${state.partners.map(p=>`<option value="${p.id}" ${u.partnerId===p.id?'selected':''}>${p.name}</option>`).join('')}</select>
-      <label>Nouveau mot de passe (laisser vide = inchangé)</label>
-      <input type="password" id="eup" placeholder="Nouveau mot de passe (optionnel)">
-      <button class="sv" onclick="subEditU(${u.id})">💾 Enregistrer</button>
-      <button class="cv" onclick="closeM()">Annuler</button>
-    </div></div>
-  `;
-}
+<!-- CHARTER -->
+<section class="charter" id="charter">
+  <div class="max">
+    <div class="charter-grid">
+      <div>
+        <div class="section-tag reveal">La charte partenaire</div>
+        <h2 class="section-title reveal">6 RÈGLES.<br>AUCUNE EXCEPTION.</h2>
+        <ul class="charter-list">
+          <li>
+            <div class="charter-num">01</div>
+            <div class="charter-text">
+              <strong>Publication régulière et conforme</strong>
+              <p>Le partenaire s'engage à publier le nombre minimum de posts requis par son grade chaque mois, sur les plateformes déclarées, avec un contenu en accord avec les standards SEA•KEBAB.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">02</div>
+            <div class="charter-text">
+              <strong>Tagging systématique de la marque</strong>
+              <p>Chaque publication doit inclure le tag officiel @seakebab. Ce tag n'est pas optionnel — il est la signature visible de l'appartenance au réseau et garantit la traçabilité de la communication.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">03</div>
+            <div class="charter-text">
+              <strong>Relais des communications officielles</strong>
+              <p>Le partenaire s'engage à reposter et republier les communications SEA•KEBAB conformément aux quotas de son grade. Il devient un amplificateur de la marque, pas seulement un bénéficiaire.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">04</div>
+            <div class="charter-text">
+              <strong>Maintien d'un niveau de qualité</strong>
+              <p>Les publications doivent atteindre le score qualité minimum requis par le grade. La qualité est évaluée sur l'engagement généré (likes, commentaires), le respect des codes visuels et l'authenticité du contenu.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">05</div>
+            <div class="charter-text">
+              <strong>Transparence et reporting mensuel</strong>
+              <p>Le partenaire fournit ou autorise la collecte de ses métriques sociales chaque mois. Aucune opacité n'est tolérée. Un partenaire qui refuse la transparence est traité comme un partenaire non conforme.</p>
+            </div>
+          </li>
+          <li>
+            <div class="charter-num">06</div>
+            <div class="charter-text">
+              <strong>Respect de l'éthique de marque</strong>
+              <p>Toute publication contraire aux valeurs de SEA•KEBAB, susceptible de ternir l'image de la marque ou du réseau, entraîne une procédure immédiate indépendamment du score de conformité.</p>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <div>
+        <div class="charter-cta reveal">
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.05em;color:var(--gold);margin-bottom:16px">Conséquences du non-respect</div>
+          <p>Un partenaire dont le score reste <strong>en dessous de 60</strong> pendant deux mois consécutifs entre automatiquement en procédure de déclassement.</p>
+          <p>Un partenaire dont le score reste <strong>en dessous de 40</strong> pendant un seul mois peut faire l'objet d'une procédure d'exclusion immédiate du réseau SEA•KEBAB.</p>
+          <p>Le déclassement est visible dans le dashboard. Il est communiqué formellement au grossiste principal du partenaire concerné.</p>
+          <p>Un partenaire exclu perd l'accès à la marque, aux assets visuels, aux avantages distributeurs et à toute référence commerciale SEA•KEBAB.</p>
+        </div>
+        <div class="reveal reveal-delay-1" style="margin-top:24px;padding:24px;border:1px solid rgba(212,168,0,.1);border-radius:4px">
+          <div style="font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:12px">Note importante</div>
+          <p style="font-size:13px;color:var(--text-muted);line-height:1.8">Ce système ne cherche pas à exclure — il cherche à élever. Un partenaire non conforme est d'abord accompagné. L'exclusion est le dernier recours, pour les cas où l'engagement est fondamentalement absent.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
 
-let cEG='',cAG='silver';
-function bindEv(){}
-function setTab(t){state.tab=t;render();}
-function setFilter(f){state.filter=f;render();}
-function setHelp(s){state.helpSection=s;render();}
-function openEdit(id){const p=state.partners.find(x=>x.id===id);cEG=p.grade;state.editId=id;state.modal='edit';render();}
-function openAdd(){cAG='silver';state.modal='add';render();}
-function openAddU(){state.modal='adduser';render();}
-function openEditU(id){state.editUserId=id;state.modal='edituser';render();}
-function doLogin(){const u=document.getElementById('lu')?.value?.trim(),p=document.getElementById('lp')?.value;if(!u||!p){const el=document.getElementById('lerr');if(el){el.style.display='block';el.textContent='Veuillez saisir votre identifiant et mot de passe.';}return;}login(u,p);}
-function selG(g){cEG=g;['silver','gold','platinum'].forEach(x=>{const b=document.getElementById('eg_'+x);if(!b)return;b.style.borderColor=x===g?GS[x].c:'rgba(255,255,255,.1)';b.style.background=x===g?GS[x].c+'20':'transparent';b.style.color=x===g?GS[x].c:'#666';});}
-function selAG(g){cAG=g;['silver','gold','platinum'].forEach(x=>{const b=document.getElementById('ag_'+x);if(!b)return;b.style.borderColor=x===g?GS[x].c:'rgba(255,255,255,.1)';b.style.background=x===g?GS[x].c+'20':'transparent';b.style.color=x===g?GS[x].c:'#666';});}
-function subEdit(id){
-  const p=state.partners.find(x=>x.id===id);
-  const n=document.getElementById('en')?.value;const c=document.getElementById('ec')?.value;
-  if(!n){flash('⚠ Le nom est obligatoire','#ef4444');return;}
-  const acc={},met={};
-  PL.forEach(pl=>{acc[pl]=document.getElementById('ea_'+pl)?.value||'';met[pl]={};['posts','reposts','republish','tagged','quality'].forEach(f=>{met[pl][f]=parseInt(document.getElementById('em_'+pl+'_'+f)?.value)||0;});});
-  savePart(id,{...p,name:n,city:c||'',grade:cEG,avatar:n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(),accounts:acc,metrics:met});
-}
-function subAdd(){
-  const n=document.getElementById('an')?.value?.trim();
-  if(!n){flash('⚠ Le nom est obligatoire','#ef4444');return;}
-  const c=document.getElementById('ac')?.value||'',acc={};
-  PL.forEach(pl=>{acc[pl]=document.getElementById('aa_'+pl)?.value||'';});
-  addPart({name:n,city:c,grade:cAG,avatar:n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(),joined:new Date().toISOString().slice(0,7),accounts:acc,metrics:Object.fromEntries(PL.map(p=>[p,{posts:0,reposts:0,republish:0,tagged:0,quality:0}]))});
-}
-function subAddU(){
-  const u=document.getElementById('uu')?.value?.trim(),pw=document.getElementById('up')?.value,r=document.getElementById('ur')?.value,pid=document.getElementById('upid')?.value;
-  if(!u||!pw){flash('⚠ Identifiant et mot de passe obligatoires','#ef4444');return;}
-  addUser({username:u,password:pw,role:r||'viewer',partnerId:pid?parseInt(pid):null});
-}
-function subEditU(id){
-  const r=document.getElementById('eur')?.value,pid=document.getElementById('eupid')?.value,pw=document.getElementById('eup')?.value;
-  const data={role:r,partnerId:pid?parseInt(pid):null};
-  if(pw)data.password=pw;
-  updateUser(id,data);
-}
-function saveSeForm(){
-  const ns={...state.settings};
-  const bt=document.getElementById('brand_tag');if(bt)ns.brand_tag=bt.value;
-  ['platinum','gold','silver'].forEach(g=>{['posts_month','reposts_month','republish_month','quality_min'].forEach(f=>{const el=document.querySelector(`input[data-grade="${g}"][data-field="${f}"]`);if(el)ns[g][f]=parseInt(el.value)||0;});});
-  saveSett(ns);
-}
-document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!state.auth)doLogin();});
-if(state.auth){loadData();}else{render();}
+<div class="divider"></div>
+
+<!-- EXCLUSION STATEMENT -->
+<section class="exclusion">
+  <div class="exclusion-inner">
+    <h2 class="exclusion-title reveal">
+      Ce dashboard répond à une question simple.
+      <strong>"Ce partenaire mérite-t-il d'être dans le réseau SEA•KEBAB ?"</strong>
+    </h2>
+    <p class="exclusion-body reveal">La réponse n'est jamais subjective. Elle est dans les chiffres, dans les posts, dans les tags, dans le score. Ce système transforme une décision commerciale difficile en un fait objectif et incontestable. C'est l'arme la plus propre qu'une marque puisse avoir.</p>
+    <div class="exclusion-levels reveal">
+      <div class="level-card">
+        <div class="level-icon">✅</div>
+        <div class="level-title">Partenaire Actif</div>
+        <div class="level-desc">Score ≥ 80. Respecte ses obligations. Contribue à la marque. Mérite son grade et ses avantages. À mettre en avant.</div>
+      </div>
+      <div class="level-card">
+        <div class="level-icon">⚠️</div>
+        <div class="level-title">Partenaire à Risque</div>
+        <div class="level-desc">Score 60-79. Engage partiellement. Bénéficie des avantages sans contribuer pleinement. 60 jours pour se redresser.</div>
+      </div>
+      <div class="level-card">
+        <div class="level-icon">❌</div>
+        <div class="level-title">Partenaire Inacceptable</div>
+        <div class="level-desc">Score &lt; 60. N'honore pas ses engagements. Nuit à la marque par son inaction. Procédure d'exclusion engagée.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- FINAL CTA -->
+<section class="final-cta">
+  <div class="final-cta-content">
+    <div class="final-cta-pre reveal">Votre réseau vous attend.</div>
+    <h2 class="final-cta-title reveal">ACCÉDEZ AU<br><span style="color:var(--gold)">DASHBOARD</span></h2>
+    <p class="section-body reveal" style="max-width:600px;margin:0 auto;text-align:center;color:var(--text-muted)">Visualisez en temps réel la conformité de chaque partenaire. Identifiez les ambassadeurs. Déclassez les passagers clandestins. Protégez ce que vous avez construit.</p>
+    <div class="final-cta-actions reveal">
+      <a href="index.html" class="btn-primary">Connexion au Dashboard →</a>
+    </div>
+    <div class="reveal" style="margin-top:60px;display:flex;justify-content:center;gap:48px;flex-wrap:wrap">
+      <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)">Instagram</div><div style="font-size:11px;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase">Surveillé</div></div>
+      <div style="width:1px;background:rgba(212,168,0,.1)"></div>
+      <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)">TikTok</div><div style="font-size:11px;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase">Surveillé</div></div>
+      <div style="width:1px;background:rgba(212,168,0,.1)"></div>
+      <div style="text-align:center"><div style="font-family:'Bebas Neue',sans-serif;font-size:36px;color:var(--gold)">Facebook</div><div style="font-size:11px;letter-spacing:.1em;color:var(--text-muted);text-transform:uppercase">Surveillé</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">SEA<span>•</span>KEBAB</div>
+  <div class="footer-copy">Partner Compliance System — Confidentiel réseau</div>
+  <div class="footer-version">v2.1.0</div>
+</footer>
+
+<script>
+// Cursor
+const cursor=document.getElementById('cursor'),ring=document.getElementById('cursorRing');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cursor.style.left=mx+'px';cursor.style.top=my+'px';});
+function animRing(){rx+=(mx-rx)*.12;ry+=(my-ry)*.12;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(animRing);}
+animRing();
+document.querySelectorAll('a,button,[class*="pillar"],[class*="grade-card"]').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cursor.style.width='16px';cursor.style.height='16px';ring.style.width='50px';ring.style.height='50px';ring.style.borderColor='rgba(212,168,0,.6)';});
+  el.addEventListener('mouseleave',()=>{cursor.style.width='8px';cursor.style.height='8px';ring.style.width='32px';ring.style.height='32px';ring.style.borderColor='rgba(212,168,0,.4)';});
+});
+
+// Scroll reveal
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+// Smooth scroll for nav links
+document.querySelectorAll('a[href^="#"]').forEach(a=>{
+  a.addEventListener('click',e=>{
+    e.preventDefault();
+    const t=document.querySelector(a.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth'});
+  });
+});
+
+// Parallax subtle
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  const glow=document.querySelector('.hero-glow');
+  if(glow)glow.style.transform=`translate(-50%, calc(-50% + ${y*.1}px))`;
+});
 </script>
 </body>
 </html>
