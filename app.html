@@ -344,6 +344,14 @@ function build(){
     ${state.modal==='add'?bAddM():''}
     ${state.modal==='adduser'?bAddUM():''}
     ${state.modal==='edituser'?bEditUM():''}
+    
+  <div class="mob-nav" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1a0c02;border-top:1px solid rgba(212,168,0,.2);z-index:49;padding:0 4px env(safe-area-inset-bottom)">
+    ${tabs.map(([t,l])=>`<button onclick="setTab('${t}')" style="flex:1;min-width:0;padding:10px 2px 8px;background:none;border:none;cursor:pointer;font-family:inherit;font-size:9px;color:${state.tab===t?'#d4a800':'#666'};display:flex;flex-direction:column;align-items:center;gap:2px;border-top:2px solid ${state.tab===t?'#d4a800':'transparent'};transition:all .2s">
+      <span style="font-size:16px">${t==='overview'?'📊':t==='charts'?'📈':t==='partners'?'👥':t==='obligations'?'📋':t==='settings'?'⚙️':t==='users'?'👤':'❓'}</span>
+      <span style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%">${l.replace('📊 ','').replace('⚙️ ','').replace('👥 ','').replace('❓ ','')}</span>
+    </button>`).join('')}
+  </div>
+  
   `;
 }
 
