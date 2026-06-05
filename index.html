@@ -5,700 +5,418 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SEA•KEBAB Partner Compliance</title>
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body { background: #0d0703; font-family: system-ui, sans-serif; color: #e8dcc8; min-height: 100vh; }
-    ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-thumb { background: rgba(212,168,0,0.3); border-radius: 4px; }
-
-    /* HEADER */
-    .header { background: linear-gradient(180deg,#1e0e02,#0d0703); border-bottom: 1px solid rgba(212,168,0,0.2); padding: 0 20px; position: sticky; top: 0; z-index: 50; }
-    .header-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
-    .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-icon { width: 30px; height: 30px; border-radius: 7px; background: linear-gradient(135deg,#c8860a,#f0a500); display: flex; align-items: center; justify-content: center; font-weight: 900; color: #1a0800; font-size: 13px; }
-    .logo-name { font-weight: 800; font-size: 13px; letter-spacing: 0.06em; color: #fff; }
-    .logo-name span { color: #d4a800; }
-    .logo-sub { font-size: 8px; color: #777; letter-spacing: 0.12em; text-transform: uppercase; }
-    .nav { display: flex; gap: 2px; }
-    .nav-btn { padding: 5px 13px; border-radius: 7px; border: none; cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 500; background: transparent; color: #777; border-bottom: 2px solid transparent; transition: all 0.2s; }
-    .nav-btn.active { background: rgba(212,168,0,0.15); color: #d4a800; border-bottom-color: #d4a800; }
-    .add-btn { padding: 6px 13px; background: linear-gradient(135deg,#c8860a,#f0a500); border: none; border-radius: 7px; color: #1a0800; font-weight: 700; cursor: pointer; font-size: 12px; }
-    .save-msg { font-size: 11px; color: #22c55e; }
-
-    /* MAIN */
-    .main { max-width: 1200px; margin: 0 auto; padding: 22px 20px; }
-
-    /* CARDS */
-    .kpi-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 11px; margin-bottom: 22px; }
-    .kpi-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 11px; padding: 14px 16px; border-left: 3px solid; }
-    .kpi-label { font-size: 9px; color: #777; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 5px; }
-    .kpi-value { font-size: 26px; font-weight: 800; line-height: 1; }
-    .kpi-sub { font-size: 9px; color: #666; margin-top: 4px; }
-
-    /* TABLE */
-    .table-card { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.07); border-radius: 13px; overflow: hidden; }
-    .table-header { padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.06); display: flex; justify-content: space-between; align-items: center; }
-    .table-title { font-weight: 700; font-size: 13px; color: #fff; }
-    .filters { display: flex; gap: 5px; }
-    .filter-btn { padding: 3px 9px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.08); cursor: pointer; background: transparent; color: #666; font-size: 10px; font-family: inherit; }
-    .filter-btn.active { border-color: #d4a800; background: rgba(212,168,0,0.08); color: #d4a800; }
-    table { width: 100%; border-collapse: collapse; }
-    th { padding: 8px 12px; text-align: left; font-size: 9px; color: #555; text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; }
-    td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,0.04); }
-    tr:nth-child(even) td { background: rgba(255,255,255,0.01); }
-
-    /* PARTNER ROW */
-    .partner-info { display: flex; align-items: center; gap: 8px; }
-    .avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; flex-shrink: 0; }
-    .partner-name { font-weight: 600; font-size: 12px; color: #fff; }
-    .partner-city { font-size: 9px; color: #666; }
-
-    /* SCORE RING */
-    .score-ring { display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; border: 3px solid; font-weight: 800; }
-
-    /* STATUS BADGE */
-    .status { display: inline-block; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; border: 1px solid; white-space: nowrap; }
-
-    /* GRADE BADGE */
-    .grade { display: inline-flex; align-items: center; gap: 4px; padding: 2px 9px; border-radius: 20px; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
-
-    /* ACTION BTNS */
-    .action-btns { display: flex; gap: 4px; }
-    .btn-edit { padding: 3px 8px; background: rgba(212,168,0,0.1); border: 1px solid rgba(212,168,0,0.25); border-radius: 5px; color: #d4a800; cursor: pointer; font-size: 10px; }
-    .btn-delete { padding: 3px 8px; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.2); border-radius: 5px; color: #ef4444; cursor: pointer; font-size: 10px; }
-    .btn-sync { padding: 3px 8px; background: rgba(99,102,241,0.1); border: 1px solid rgba(99,102,241,0.25); border-radius: 5px; color: #818cf8; cursor: pointer; font-size: 10px; }
-
-    /* MODAL */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.82); display: flex; align-items: center; justify-content: center; z-index: 999; backdrop-filter: blur(6px); }
-    .modal { background: #1a1008; border: 1px solid rgba(212,168,0,0.3); border-radius: 16px; padding: 26px; width: min(660px,94vw); max-height: 88vh; overflow-y: auto; box-shadow: 0 32px 80px rgba(0,0,0,0.7); }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-    .modal-title { font-size: 17px; font-weight: 800; color: #fff; }
-    .close-btn { background: rgba(255,255,255,0.08); border: none; color: #fff; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 15px; }
-    .section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 14px; margin-bottom: 14px; }
-    .section-title { color: #d4a800; font-size: 10px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px; }
-    label { display: block; font-size: 11px; color: #888; margin-bottom: 5px; margin-top: 10px; }
-    input[type=text], input[type=number] { width: 100%; padding: 8px 11px; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12); border-radius: 7px; color: #fff; font-size: 13px; font-family: inherit; }
-    input:focus { outline: none; border-color: rgba(200,150,20,0.5); }
-    .grade-btns { display: flex; gap: 8px; margin-top: 6px; }
-    .grade-select-btn { flex: 1; padding: 7px 0; border-radius: 7px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #666; font-family: inherit; font-size: 10px; font-weight: 700; text-transform: uppercase; }
-    .save-btn { width: 100%; padding: 11px; background: linear-gradient(135deg,#c8860a,#f0a500); border: none; border-radius: 9px; color: #1a0800; cursor: pointer; font-family: inherit; font-weight: 800; font-size: 14px; margin-top: 8px; }
-    .cancel-btn { width: 100%; padding: 11px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 9px; color: #aaa; cursor: pointer; font-family: inherit; margin-top: 8px; }
-    .metrics-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 9px; }
-    .progress-bar { background: rgba(255,255,255,0.07); border-radius: 4px; height: 5px; overflow: hidden; margin-top: 4px; }
-    .progress-fill { height: 100%; border-radius: 4px; transition: width 0.5s; }
-
-    /* PLATFORM SECTION */
-    .platform-title { display: flex; align-items: center; gap: 7px; font-weight: 700; font-size: 13px; margin-bottom: 11px; }
-
-    /* CONNECT BTN */
-    .connect-btn { padding: 5px 12px; background: rgba(99,102,241,0.15); border: 1px solid rgba(99,102,241,0.3); border-radius: 6px; color: #818cf8; cursor: pointer; font-size: 11px; font-family: inherit; }
-
-    /* OBLIGATIONS */
-    .obligations-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(260px,1fr)); gap: 14px; }
-    .obligation-card { border-radius: 13px; padding: 18px; }
-    .obligation-row { display: flex; justify-content: space-between; align-items: center; padding: 7px 10px; background: rgba(0,0,0,0.2); border-radius: 6px; margin-bottom: 5px; font-size: 11px; }
-
-    /* LOADING */
-    .loading { display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; gap: 14px; }
-    .spinner { width: 38px; height: 38px; border-radius: 50%; border: 3px solid rgba(212,168,0,0.15); border-top-color: #d4a800; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* PARTNER CARDS */
-    .partner-cards { display: grid; grid-template-columns: repeat(auto-fill,minmax(270px,1fr)); gap: 12px; }
-    .partner-card { background: rgba(255,255,255,0.025); border-radius: 13px; padding: 16px; border: 1px solid; }
-    .card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 11px; }
-    .card-accounts { background: rgba(255,255,255,0.03); border-radius: 8px; padding: 8px; margin: 10px 0; }
-    .account-row { display: flex; align-items: center; gap: 6px; margin-bottom: 3px; font-size: 10px; }
-    .account-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-    .platform-scores { display: flex; gap: 6px; margin-bottom: 9px; }
-    .platform-score-box { flex: 1; background: rgba(255,255,255,0.04); border-radius: 6px; padding: 5px; text-align: center; }
-    .card-btns { display: flex; gap: 6px; }
-
-    /* SETTINGS */
-    .settings-section { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
-    .slider-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-    input[type=range] { width: 100%; cursor: pointer; accent-color: #d4a800; }
-
-    @media (max-width: 768px) {
-      .kpi-grid { grid-template-columns: repeat(2,1fr); }
-      .nav { display: none; }
-    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0d0703;font-family:system-ui,sans-serif;color:#e8dcc8;min-height:100vh}
+    ::-webkit-scrollbar{width:4px}::-webkit-scrollbar-thumb{background:rgba(212,168,0,0.3);border-radius:4px}
+    input:focus{outline:none;border-color:rgba(200,150,20,0.5)!important}
+    .login-wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(ellipse at center,#1e0e02 0%,#0d0703 70%)}
+    .login-box{background:rgba(255,255,255,0.03);border:1px solid rgba(212,168,0,0.3);border-radius:16px;padding:36px;width:360px;box-shadow:0 32px 80px rgba(0,0,0,0.6)}
+    .login-logo{text-align:center;margin-bottom:28px}
+    .login-logo-icon{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#c8860a,#f0a500);display:inline-flex;align-items:center;justify-content:center;font-weight:900;color:#1a0800;font-size:22px;margin-bottom:10px}
+    .login-title{font-weight:800;font-size:18px;color:#fff;letter-spacing:0.05em}
+    .login-sub{font-size:11px;color:#777;letter-spacing:0.1em;text-transform:uppercase;margin-top:2px}
+    .login-field{margin-bottom:16px}
+    .login-label{display:block;font-size:11px;color:#888;margin-bottom:6px}
+    .login-input{width:100%;padding:10px 12px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#fff;font-size:14px;font-family:inherit}
+    .login-btn{width:100%;padding:12px;background:linear-gradient(135deg,#c8860a,#f0a500);border:none;border-radius:9px;color:#1a0800;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;margin-top:6px}
+    .login-error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px 12px;color:#ef4444;font-size:12px;margin-bottom:14px;display:none}
+    .role-badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+    .role-admin{background:rgba(212,168,0,0.15);color:#d4a800;border:1px solid rgba(212,168,0,0.3)}
+    .role-viewer{background:rgba(99,102,241,0.15);color:#818cf8;border:1px solid rgba(99,102,241,0.3)}
+    .role-partner{background:rgba(34,197,94,0.15);color:#22c55e;border:1px solid rgba(34,197,94,0.3)}
+    .header{background:linear-gradient(180deg,#1e0e02,#0d0703);border-bottom:1px solid rgba(212,168,0,0.2);padding:0 20px;position:sticky;top:0;z-index:50}
+    .header-inner{max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:56px}
+    .logo{display:flex;align-items:center;gap:10px}
+    .logo-icon{width:30px;height:30px;border-radius:7px;background:linear-gradient(135deg,#c8860a,#f0a500);display:flex;align-items:center;justify-content:center;font-weight:900;color:#1a0800;font-size:13px}
+    .logo-name{font-weight:800;font-size:13px;letter-spacing:0.06em;color:#fff}
+    .logo-name span{color:#d4a800}
+    .logo-sub{font-size:8px;color:#777;letter-spacing:0.12em;text-transform:uppercase}
+    .nav{display:flex;gap:2px}
+    .nav-btn{padding:5px 12px;border-radius:7px;border:none;cursor:pointer;font-family:inherit;font-size:11px;font-weight:500;background:transparent;color:#777;border-bottom:2px solid transparent;transition:all 0.2s}
+    .nav-btn.active{background:rgba(212,168,0,0.15);color:#d4a800;border-bottom-color:#d4a800}
+    .header-right{display:flex;align-items:center;gap:10px}
+    .user-info{font-size:11px;color:#888}
+    .logout-btn{padding:5px 11px;background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.25);border-radius:7px;color:#ef4444;cursor:pointer;font-size:11px;font-family:inherit}
+    .add-btn{padding:6px 13px;background:linear-gradient(135deg,#c8860a,#f0a500);border:none;border-radius:7px;color:#1a0800;font-weight:700;cursor:pointer;font-size:12px}
+    .save-msg{font-size:11px;color:#22c55e}
+    .readonly-banner{background:rgba(99,102,241,0.08);border-bottom:1px solid rgba(99,102,241,0.2);padding:8px 20px;text-align:center;font-size:12px;color:#818cf8}
+    .main{max-width:1200px;margin:0 auto;padding:22px 20px}
+    .kpi-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:11px;margin-bottom:22px}
+    .kpi-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:11px;padding:14px 16px;border-left:3px solid}
+    .kpi-label{font-size:9px;color:#777;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:5px}
+    .kpi-value{font-size:26px;font-weight:800;line-height:1}
+    .kpi-sub{font-size:9px;color:#666;margin-top:4px}
+    .table-card{background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:13px;overflow:hidden}
+    .table-header{padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center}
+    .table-title{font-weight:700;font-size:13px;color:#fff}
+    .filters{display:flex;gap:5px}
+    .filter-btn{padding:3px 9px;border-radius:6px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;background:transparent;color:#666;font-size:10px;font-family:inherit}
+    .filter-btn.active{border-color:#d4a800;background:rgba(212,168,0,0.08);color:#d4a800}
+    table{width:100%;border-collapse:collapse}
+    th{padding:8px 12px;text-align:left;font-size:9px;color:#555;text-transform:uppercase;letter-spacing:0.08em;font-weight:600}
+    td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04)}
+    tr:nth-child(even) td{background:rgba(255,255,255,0.01)}
+    .partner-info{display:flex;align-items:center;gap:8px}
+    .avatar{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;flex-shrink:0}
+    .partner-name{font-weight:600;font-size:12px;color:#fff}
+    .partner-city{font-size:9px;color:#666}
+    .score-ring{display:inline-flex;align-items:center;justify-content:center;border-radius:50%;border:3px solid;font-weight:800}
+    .status{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;border:1px solid;white-space:nowrap}
+    .grade{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}
+    .action-btns{display:flex;gap:4px}
+    .btn-edit{padding:3px 8px;background:rgba(212,168,0,0.1);border:1px solid rgba(212,168,0,0.25);border-radius:5px;color:#d4a800;cursor:pointer;font-size:10px}
+    .btn-delete{padding:3px 8px;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.2);border-radius:5px;color:#ef4444;cursor:pointer;font-size:10px}
+    .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.82);display:flex;align-items:center;justify-content:center;z-index:999;backdrop-filter:blur(6px)}
+    .modal{background:#1a1008;border:1px solid rgba(212,168,0,0.3);border-radius:16px;padding:26px;width:min(660px,94vw);max-height:88vh;overflow-y:auto;box-shadow:0 32px 80px rgba(0,0,0,0.7)}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+    .modal-title{font-size:17px;font-weight:800;color:#fff}
+    .close-btn{background:rgba(255,255,255,0.08);border:none;color:#fff;width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:15px}
+    .section{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:10px;padding:14px;margin-bottom:14px}
+    .section-title{color:#d4a800;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px}
+    label{display:block;font-size:11px;color:#888;margin-bottom:5px;margin-top:10px}
+    input[type=text],input[type=number],input[type=password],select{width:100%;padding:8px 11px;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);border-radius:7px;color:#fff;font-size:13px;font-family:inherit}
+    .grade-btns{display:flex;gap:8px;margin-top:6px}
+    .grade-select-btn{flex:1;padding:7px 0;border-radius:7px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);background:transparent;color:#666;font-family:inherit;font-size:10px;font-weight:700;text-transform:uppercase}
+    .save-btn{width:100%;padding:11px;background:linear-gradient(135deg,#c8860a,#f0a500);border:none;border-radius:9px;color:#1a0800;cursor:pointer;font-family:inherit;font-weight:800;font-size:14px;margin-top:8px}
+    .cancel-btn{width:100%;padding:11px;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:9px;color:#aaa;cursor:pointer;font-family:inherit;margin-top:8px}
+    .metrics-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}
+    .progress-bar{background:rgba(255,255,255,0.07);border-radius:4px;height:5px;overflow:hidden;margin-top:4px}
+    .progress-fill{height:100%;border-radius:4px;transition:width 0.5s}
+    .platform-title{display:flex;align-items:center;gap:7px;font-weight:700;font-size:13px;margin-bottom:11px}
+    .partner-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+    .partner-card{background:rgba(255,255,255,0.025);border-radius:13px;padding:16px;border:1px solid}
+    .card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:11px}
+    .card-accounts{background:rgba(255,255,255,0.03);border-radius:8px;padding:8px;margin:10px 0}
+    .account-row{display:flex;align-items:center;gap:6px;margin-bottom:3px;font-size:10px}
+    .account-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+    .platform-scores{display:flex;gap:6px;margin-bottom:9px}
+    .platform-score-box{flex:1;background:rgba(255,255,255,0.04);border-radius:6px;padding:5px;text-align:center}
+    .card-btns{display:flex;gap:6px}
+    .obligations-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+    .obligation-card{border-radius:13px;padding:18px}
+    .obligation-row{display:flex;justify-content:space-between;align-items:center;padding:7px 10px;background:rgba(0,0,0,0.2);border-radius:6px;margin-bottom:5px;font-size:11px}
+    .settings-section{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:20px;margin-bottom:16px}
+    .slider-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px}
+    input[type=range]{width:100%;cursor:pointer;accent-color:#d4a800}
+    .users-table{width:100%;border-collapse:collapse;margin-top:12px}
+    .users-table th{padding:8px 12px;text-align:left;font-size:10px;color:#666;text-transform:uppercase;border-bottom:1px solid rgba(255,255,255,0.06)}
+    .users-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px}
+    .loading{display:flex;align-items:center;justify-content:center;min-height:100vh;flex-direction:column;gap:14px}
+    .spinner{width:38px;height:38px;border-radius:50%;border:3px solid rgba(212,168,0,0.15);border-top-color:#d4a800;animation:spin 0.8s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+    @media(max-width:768px){.kpi-grid{grid-template-columns:repeat(2,1fr)}.nav{display:none}}
   </style>
 </head>
 <body>
-
 <div id="app"></div>
-
 <script>
-const API = 'https://seakebab-dashboard-production.up.railway.app';
-
-const GRADE_STYLE = {
-  silver:   { label:'Silver',   color:'#C0C0C0', icon:'◆' },
-  gold:     { label:'Gold',     color:'#FFD700', icon:'★' },
-  platinum: { label:'Platinum', color:'#b8b8ff', icon:'✦' },
-};
-const PLATFORMS = ['Instagram','TikTok','Facebook'];
-const PLATFORM_COLOR = { Instagram:'#E1306C', TikTok:'#69C9D0', Facebook:'#1877F2' };
-
-function sc(s) { return s>=80?'#22c55e':s>=60?'#f59e0b':'#ef4444'; }
-function sl(s) { return s>=80?'Conforme':s>=60?'Partiel':'Non conforme'; }
-
-function computeCompliance(partner, settings) {
-  const ob = settings[partner.grade];
-  const scores = PLATFORMS.map(p => {
-    const m = partner.metrics[p];
-    const s =
-      Math.min(m.posts/Math.max(ob.posts_month,1),1)*25 +
-      Math.min(m.reposts/Math.max(ob.reposts_month,1),1)*20 +
-      Math.min(m.republish/Math.max(ob.republish_month,1),1)*15 +
-      Math.min(m.quality/Math.max(ob.quality_min,1),1)*25 +
-      (m.tagged/Math.max(m.posts,1))*15;
-    return Math.min(Math.round(s),100);
-  });
-  const global = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
-  return { perPlatform: Object.fromEntries(PLATFORMS.map((p,i)=>[p,scores[i]])), global };
+const API='https://seakebab-dashboard-production.up.railway.app';
+const GRADE_STYLE={silver:{label:'Silver',color:'#C0C0C0',icon:'◆'},gold:{label:'Gold',color:'#FFD700',icon:'★'},platinum:{label:'Platinum',color:'#b8b8ff',icon:'✦'}};
+const PLATFORMS=['Instagram','TikTok','Facebook'];
+const PLATFORM_COLOR={Instagram:'#E1306C',TikTok:'#69C9D0',Facebook:'#1877F2'};
+function sc(s){return s>=80?'#22c55e':s>=60?'#f59e0b':'#ef4444'}
+function sl(s){return s>=80?'Conforme':s>=60?'Partiel':'Non conforme'}
+function computeCompliance(p,s){
+  const ob=s[p.grade];
+  const scores=PLATFORMS.map(pl=>{const m=p.metrics[pl];const v=Math.min(m.posts/Math.max(ob.posts_month,1),1)*25+Math.min(m.reposts/Math.max(ob.reposts_month,1),1)*20+Math.min(m.republish/Math.max(ob.republish_month,1),1)*15+Math.min(m.quality/Math.max(ob.quality_min,1),1)*25+(m.tagged/Math.max(m.posts,1))*15;return Math.min(Math.round(v),100);});
+  return{perPlatform:Object.fromEntries(PLATFORMS.map((pl,i)=>[pl,scores[i]])),global:Math.round(scores.reduce((a,b)=>a+b,0)/scores.length)};
 }
+function ring(score,size=44){const c=sc(score);return `<div class="score-ring" style="width:${size}px;height:${size}px;border-color:${c};color:${c};font-size:${size<42?10:12}px;background:${c}18">${score}</div>`}
+function gbadge(grade){const g=GRADE_STYLE[grade];return `<span class="grade" style="background:${g.color}20;border:1px solid ${g.color}60;color:${g.color}">${g.icon} ${g.label}</span>`}
+function pbar(v,mx){const pct=Math.min((v/Math.max(mx,1))*100,100);const c=pct>=100?'#22c55e':pct>=60?'#f59e0b':'#ef4444';return `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${c}"></div></div>`}
 
-function scoreRing(score, size=44) {
-  const c = sc(score);
-  return `<div class="score-ring" style="width:${size}px;height:${size}px;border-color:${c};color:${c};font-size:${size<42?10:12}px;background:${c}18">${score}</div>`;
+let state={auth:null,partners:[],settings:{brand_tag:'@seakebab',silver:{posts_month:4,reposts_month:2,republish_month:1,quality_min:60},gold:{posts_month:8,reposts_month:4,republish_month:2,quality_min:70},platinum:{posts_month:12,reposts_month:6,republish_month:3,quality_min:80}},users:[],loading:true,tab:'overview',filter:'all',modal:null,saveMsg:'',editId:null};
+const saved=localStorage.getItem('skauth');if(saved)state.auth=JSON.parse(saved);
+
+function ah(){return{'Content-Type':'application/json','Authorization':'Bearer '+(state.auth?.token||'')}}
+async function ag(p){const r=await fetch(API+p,{headers:ah()});if(r.status===401){logout();return null}return r.json()}
+async function ap(p,b){const r=await fetch(API+p,{method:'POST',headers:ah(),body:JSON.stringify(b)});if(r.status===401){logout();return null}return r.json()}
+async function apu(p,b){const r=await fetch(API+p,{method:'PUT',headers:ah(),body:JSON.stringify(b)});return r.json()}
+async function ad(p){const r=await fetch(API+p,{method:'DELETE',headers:ah()});return r.json()}
+
+async function login(u,pw){
+  try{
+    const r=await fetch(API+'/api/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username:u,password:pw})});
+    const d=await r.json();
+    if(d.error){const el=document.getElementById('lerr');if(el){el.style.display='block';el.textContent=d.error;}return;}
+    state.auth=d;localStorage.setItem('skauth',JSON.stringify(d));await loadData();
+  }catch(e){const el=document.getElementById('lerr');if(el){el.style.display='block';el.textContent='Erreur de connexion';}}
 }
-
-function gradeBadge(grade) {
-  const g = GRADE_STYLE[grade];
-  return `<span class="grade" style="background:${g.color}20;border:1px solid ${g.color}60;color:${g.color}">${g.icon} ${g.label}</span>`;
+function logout(){if(state.auth?.token)ap('/api/logout',{});state.auth=null;localStorage.removeItem('skauth');state.partners=[];state.tab='overview';render();}
+async function loadData(){
+  state.loading=true;render();
+  try{
+    const[pa,se]=await Promise.all([ag('/api/partners'),ag('/api/settings')]);
+    if(pa)state.partners=pa;if(se)state.settings=se;
+    if(state.auth?.role==='admin'){const us=await ag('/api/users');if(us)state.users=us;}
+  }catch(e){}
+  state.loading=false;render();
 }
+function flash(m){state.saveMsg=m;render();setTimeout(()=>{state.saveMsg='';render();},2500)}
+const isA=()=>state.auth?.role==='admin';
+const isRO=()=>state.auth?.role!=='admin';
 
-function progressBar(value, max) {
-  const pct = Math.min((value/Math.max(max,1))*100,100);
-  const c = pct>=100?'#22c55e':pct>=60?'#f59e0b':'#ef4444';
-  return `<div class="progress-bar"><div class="progress-fill" style="width:${pct}%;background:${c}"></div></div>`;
-}
+async function savePart(id,data){await apu('/api/partners/'+id,data);await loadData();flash('✓ Sauvegardé');closeM();}
+async function addPart(data){await ap('/api/partners',data);await loadData();flash('✓ Ajouté');closeM();}
+async function delPart(id){if(!confirm('Supprimer ?'))return;await ad('/api/partners/'+id);await loadData();flash('✓ Supprimé');}
+async function saveSett(data){await apu('/api/settings',data);state.settings=data;flash('✓ Sauvegardé');render();}
+async function addUser(data){const r=await ap('/api/users',data);if(r?.error){alert(r.error);return;}await loadData();flash('✓ Utilisateur créé');closeM();}
+async function delUser(id){if(!confirm('Supprimer ?'))return;await ad('/api/users/'+id);await loadData();flash('✓ Supprimé');}
+function closeM(){state.modal=null;state.editId=null;render();}
 
-// ── STATE ─────────────────────────────────────────────────────────────────────
-let state = {
-  partners: [],
-  settings: {
-    brand_tag: '@seakebab',
-    silver:   { posts_month:4,  reposts_month:2, republish_month:1, quality_min:60 },
-    gold:     { posts_month:8,  reposts_month:4, republish_month:2, quality_min:70 },
-    platinum: { posts_month:12, reposts_month:6, republish_month:3, quality_min:80 },
-  },
-  loading: true,
-  tab: 'overview',
-  filterGrade: 'all',
-  modal: null,
-  saveMsg: '',
-  editingPartner: null,
-  editForm: {},
-};
+function render(){document.getElementById('app').innerHTML=build();bindEv();}
 
-// ── API CALLS ─────────────────────────────────────────────────────────────────
-async function apiGet(path) {
-  const r = await fetch(API + path);
-  return r.json();
-}
-async function apiPost(path, body) {
-  const r = await fetch(API + path, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-  return r.json();
-}
-async function apiPut(path, body) {
-  const r = await fetch(API + path, { method:'PUT', headers:{'Content-Type':'application/json'}, body: JSON.stringify(body) });
-  return r.json();
-}
-async function apiDelete(path) {
-  const r = await fetch(API + path, { method:'DELETE' });
-  return r.json();
-}
-
-async function loadData() {
-  try {
-    const [partners, settings] = await Promise.all([apiGet('/api/partners'), apiGet('/api/settings')]);
-    state.partners = partners.length ? partners : getDefaultPartners();
-    state.settings = settings;
-  } catch(e) {
-    state.partners = getDefaultPartners();
-  }
-  state.loading = false;
-  render();
-}
-
-function getDefaultPartners() {
-  return [
-    { id:1, name:'Le Bosphore', city:'Paris 11e', grade:'platinum', avatar:'LB',
-      accounts:{ Instagram:'@lebosphore_paris', TikTok:'@lebosphore', Facebook:'Le Bosphore Paris' },
-      metrics:{ Instagram:{posts:11,reposts:6,republish:3,tagged:10,quality:84}, TikTok:{posts:9,reposts:5,republish:2,tagged:9,quality:78}, Facebook:{posts:12,reposts:7,republish:3,tagged:12,quality:88} } },
-    { id:2, name:'Sultane Grillhouse', city:'Lyon 6e', grade:'gold', avatar:'SG',
-      accounts:{ Instagram:'@sultane_grill', TikTok:'@sultanegrill', Facebook:'Sultane Grillhouse' },
-      metrics:{ Instagram:{posts:8,reposts:3,republish:2,tagged:7,quality:72}, TikTok:{posts:5,reposts:2,republish:1,tagged:5,quality:65}, Facebook:{posts:7,reposts:4,republish:2,tagged:7,quality:74} } },
-  ];
-}
-
-function flash(msg) { state.saveMsg = msg; render(); setTimeout(()=>{ state.saveMsg=''; render(); }, 2500); }
-
-// ── ACTIONS ───────────────────────────────────────────────────────────────────
-async function savePartner(id, data) {
-  await apiPut('/api/partners/'+id, data);
-  await loadData();
-  flash('✓ Sauvegardé');
-  closeModal();
-}
-
-async function addPartner(data) {
-  await apiPost('/api/partners', data);
-  await loadData();
-  flash('✓ Partenaire ajouté');
-  closeModal();
-}
-
-async function deletePartner(id) {
-  if (!confirm('Supprimer ce partenaire ?')) return;
-  await apiDelete('/api/partners/'+id);
-  await loadData();
-  flash('✓ Supprimé');
-}
-
-async function saveSettings(data) {
-  await apiPut('/api/settings', data);
-  state.settings = data;
-  flash('✓ Paramètres sauvegardés');
-  render();
-}
-
-async function syncPartner(id) {
-  flash('🔄 Synchronisation...');
-  try {
-    await apiPost('/api/sync/'+id, {});
-    await loadData();
-    flash('✓ Métriques synchronisées');
-  } catch(e) { flash('⚠ Erreur sync'); }
-}
-
-function connectInstagram(id) {
-  window.open(API+'/api/auth/instagram?partnerId='+id, '_blank');
-}
-
-function closeModal() { state.modal = null; state.editingPartner = null; render(); }
-
-// ── RENDER ────────────────────────────────────────────────────────────────────
-function render() {
-  document.getElementById('app').innerHTML = buildApp();
-  bindEvents();
-}
-
-function buildApp() {
-  if (state.loading) return `<div class="loading"><div class="spinner"></div><p style="color:#888;font-size:13px">Chargement...</p></div>`;
-
-  const enriched = state.partners.map(p => ({ ...p, compliance: computeCompliance(p, state.settings) }));
-  const displayed = enriched.filter(p => state.filterGrade==='all' || p.grade===state.filterGrade)
-    .sort((a,b) => b.compliance.global - a.compliance.global);
-
-  const total = enriched.length;
-  const conf  = enriched.filter(p=>p.compliance.global>=80).length;
-  const part  = enriched.filter(p=>p.compliance.global>=60&&p.compliance.global<80).length;
-  const nonC  = enriched.filter(p=>p.compliance.global<60).length;
-  const avg   = total ? Math.round(enriched.reduce((s,p)=>s+p.compliance.global,0)/total) : 0;
-
+function build(){
+  if(!state.auth)return buildLogin();
+  if(state.loading)return `<div class="loading"><div class="spinner"></div><p style="color:#888">Chargement...</p></div>`;
+  const en=state.partners.map(p=>({...p,c:computeCompliance(p,state.settings)}));
+  const di=en.filter(p=>state.filter==='all'||p.grade===state.filter).sort((a,b)=>b.c.global-a.c.global);
+  const tot=en.length,conf=en.filter(p=>p.c.global>=80).length,part=en.filter(p=>p.c.global>=60&&p.c.global<80).length,nc=en.filter(p=>p.c.global<60).length,avg=tot?Math.round(en.reduce((s,p)=>s+p.c.global,0)/tot):0;
+  const tabs=isA()?[['overview',"Vue d'ensemble"],['partners','Partenaires'],['obligations','Obligations'],['settings','⚙️ Paramètres'],['users','👥 Utilisateurs']]:[['overview',"Vue d'ensemble"],['partners','Partenaires'],['obligations','Obligations']];
+  const rc=isA()?'role-admin':state.auth.role==='viewer'?'role-viewer':'role-partner';
+  const rl=isA()?'Admin':state.auth.role==='viewer'?'Viewer':'Partenaire';
   return `
-    <div class="header">
-      <div class="header-inner">
-        <div class="logo">
-          <div class="logo-icon">S</div>
-          <div>
-            <div class="logo-name">SEA<span>•</span>KEBAB</div>
-            <div class="logo-sub">Partner Compliance</div>
-          </div>
-        </div>
-        <nav class="nav">
-          <button class="nav-btn ${state.tab==='overview'?'active':''}" onclick="setTab('overview')">Vue d'ensemble</button>
-          <button class="nav-btn ${state.tab==='partners'?'active':''}" onclick="setTab('partners')">Partenaires</button>
-          <button class="nav-btn ${state.tab==='obligations'?'active':''}" onclick="setTab('obligations')">Obligations</button>
-          <button class="nav-btn ${state.tab==='settings'?'active':''}" onclick="setTab('settings')">⚙️ Paramètres</button>
-        </nav>
-        <div style="display:flex;align-items:center;gap:10px">
-          ${state.saveMsg ? `<span class="save-msg">${state.saveMsg}</span>` : ''}
-          <button class="add-btn" onclick="openAddModal()">+ Partenaire</button>
-        </div>
+    <div class="header"><div class="header-inner">
+      <div class="logo"><div class="logo-icon">S</div><div><div class="logo-name">SEA<span>•</span>KEBAB</div><div class="logo-sub">Partner Compliance</div></div></div>
+      <nav class="nav">${tabs.map(([t,l])=>`<button class="nav-btn ${state.tab===t?'active':''}" onclick="setTab('${t}')">${l}</button>`).join('')}</nav>
+      <div class="header-right">
+        ${state.saveMsg?`<span class="save-msg">${state.saveMsg}</span>`:''}
+        <span class="role-badge ${rc}">${rl}</span>
+        <span class="user-info">${state.auth.username}</span>
+        ${isA()?`<button class="add-btn" onclick="openAdd()">+ Partenaire</button>`:''}
+        <button class="logout-btn" onclick="logout()">Déconnexion</button>
       </div>
-    </div>
-
+    </div></div>
+    ${isRO()?`<div class="readonly-banner">👁️ Mode consultation — ${state.auth.role==='partner'?'Vous voyez uniquement vos données':'Aucune modification possible'}</div>`:''}
     <div class="main">
-      ${state.tab==='overview' ? buildOverview(displayed, total, conf, part, nonC, avg) : ''}
-      ${state.tab==='partners' ? buildPartners(displayed) : ''}
-      ${state.tab==='obligations' ? buildObligations() : ''}
-      ${state.tab==='settings' ? buildSettings() : ''}
+      ${state.tab==='overview'?buildOv(di,tot,conf,part,nc,avg):''}
+      ${state.tab==='partners'?buildPa(di):''}
+      ${state.tab==='obligations'?buildOb():''}
+      ${state.tab==='settings'&&isA()?buildSe():''}
+      ${state.tab==='users'&&isA()?buildUs():''}
     </div>
-
-    ${state.modal==='edit' ? buildEditModal() : ''}
-    ${state.modal==='add'  ? buildAddModal()  : ''}
+    ${state.modal==='edit'?buildEditM():''}
+    ${state.modal==='add'?buildAddM():''}
+    ${state.modal==='adduser'?buildAddUM():''}
   `;
 }
 
-function buildOverview(displayed, total, conf, part, nonC, avg) {
-  const kpis = [
-    ['Total', total, '#d4a800', 'actifs'],
-    ['Conformes', conf, '#22c55e', 'score ≥ 80'],
-    ['Partiels', part, '#f59e0b', '60–79'],
-    ['Non conformes', nonC, '#ef4444', '< 60'],
-    ['Score moyen', avg+'%', '#818cf8', 'global'],
-  ];
+function buildLogin(){return `
+  <div class="login-wrap"><div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-icon">S</div>
+      <div class="login-title">SEA<span style="color:#d4a800">•</span>KEBAB</div>
+      <div class="login-sub">Partner Compliance Dashboard</div>
+    </div>
+    <div class="login-error" id="lerr"></div>
+    <div class="login-field"><label class="login-label">Identifiant</label><input class="login-input" type="text" id="lu" placeholder="admin"></div>
+    <div class="login-field"><label class="login-label">Mot de passe</label><input class="login-input" type="password" id="lp" placeholder="••••••••"></div>
+    <button class="login-btn" onclick="doLogin()">Se connecter</button>
+    <div style="margin-top:18px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:11px;color:#666">
+      <div style="margin-bottom:6px;color:#888;font-weight:600">Accès de démonstration</div>
+      <div>👑 <span style="color:#d4a800">admin</span> / <span style="color:#d4a800">seakebab@2026</span></div>
+      <div style="margin-top:3px">👁️ <span style="color:#818cf8">overview</span> / <span style="color:#818cf8">overview@2026</span></div>
+    </div>
+  </div></div>
+`}
 
-  const filters = [['all','Tous'],['platinum','Platinum'],['gold','Gold'],['silver','Silver']];
-
+function buildOv(di,tot,conf,part,nc,avg){
+  const filt=[['all','Tous'],['platinum','Platinum'],['gold','Gold'],['silver','Silver']];
   return `
     <div class="kpi-grid">
-      ${kpis.map(([l,v,c,s])=>`
-        <div class="kpi-card" style="border-left-color:${c}">
-          <div class="kpi-label">${l}</div>
-          <div class="kpi-value" style="color:${c}">${v}</div>
-          <div class="kpi-sub">${s}</div>
-        </div>
-      `).join('')}
+      ${[['Total',tot,'#d4a800','actifs'],['Conformes',conf,'#22c55e','≥ 80'],['Partiels',part,'#f59e0b','60-79'],['Non conf.',nc,'#ef4444','< 60'],['Moy.',avg+'%','#818cf8','global']].map(([l,v,c,s])=>`<div class="kpi-card" style="border-left-color:${c}"><div class="kpi-label">${l}</div><div class="kpi-value" style="color:${c}">${v}</div><div class="kpi-sub">${s}</div></div>`).join('')}
     </div>
-
     <div class="table-card">
       <div class="table-header">
-        <div class="table-title">Tableau de conformité · <span style="color:#555;font-weight:400;font-size:11px">${displayed.length} partenaire${displayed.length>1?'s':''}</span></div>
-        <div class="filters">
-          ${filters.map(([v,l])=>`<button class="filter-btn ${state.filterGrade===v?'active':''}" onclick="setFilter('${v}')">${l}</button>`).join('')}
-        </div>
+        <div class="table-title">Tableau de conformité · <span style="color:#555;font-weight:400;font-size:11px">${di.length} partenaire${di.length>1?'s':''}</span></div>
+        <div class="filters">${filt.map(([v,l])=>`<button class="filter-btn ${state.filter===v?'active':''}" onclick="setFilter('${v}')">${l}</button>`).join('')}</div>
       </div>
-      <div style="overflow-x:auto">
-        <table>
-          <thead><tr>
-            <th>Partenaire</th><th>Grade</th><th>Instagram</th><th>TikTok</th><th>Facebook</th><th>Global</th><th>Statut</th><th>Actions</th>
-          </tr></thead>
-          <tbody>
-            ${displayed.map(p=>`
-              <tr>
-                <td>
-                  <div class="partner-info">
-                    <div class="avatar" style="background:${GRADE_STYLE[p.grade].color}20;border:1px solid ${GRADE_STYLE[p.grade].color}60;color:${GRADE_STYLE[p.grade].color}">${p.avatar}</div>
-                    <div>
-                      <div class="partner-name">${p.name}</div>
-                      <div class="partner-city">${p.city}</div>
-                    </div>
-                  </div>
-                </td>
-                <td>${gradeBadge(p.grade)}</td>
-                ${PLATFORMS.map(pl=>`<td>${scoreRing(p.compliance.perPlatform[pl],36)}</td>`).join('')}
-                <td>${scoreRing(p.compliance.global,42)}</td>
-                <td><span class="status" style="background:${sc(p.compliance.global)}18;color:${sc(p.compliance.global)};border-color:${sc(p.compliance.global)}40">${sl(p.compliance.global)}</span></td>
-                <td>
-                  <div class="action-btns">
-                    <button class="btn-edit" onclick="openEditModal(${p.id})">✏️</button>
-                    <button class="btn-sync" onclick="syncPartner(${p.id})">🔄</button>
-                    <button class="btn-delete" onclick="deletePartner(${p.id})">🗑</button>
-                  </div>
-                </td>
-              </tr>
-            `).join('')}
-            ${displayed.length===0?`<tr><td colspan="8" style="text-align:center;color:#555;padding:30px">Aucun partenaire.</td></tr>`:''}
-          </tbody>
-        </table>
-      </div>
+      <div style="overflow-x:auto"><table>
+        <thead><tr><th>Partenaire</th><th>Grade</th><th>Instagram</th><th>TikTok</th><th>Facebook</th><th>Global</th><th>Statut</th>${isA()?'<th>Actions</th>':''}</tr></thead>
+        <tbody>
+          ${di.map(p=>`<tr>
+            <td><div class="partner-info"><div class="avatar" style="background:${GRADE_STYLE[p.grade].color}20;border:1px solid ${GRADE_STYLE[p.grade].color}60;color:${GRADE_STYLE[p.grade].color}">${p.avatar}</div><div><div class="partner-name">${p.name}</div><div class="partner-city">${p.city}</div></div></div></td>
+            <td>${gbadge(p.grade)}</td>
+            ${PLATFORMS.map(pl=>`<td>${ring(p.c.perPlatform[pl],36)}</td>`).join('')}
+            <td>${ring(p.c.global,42)}</td>
+            <td><span class="status" style="background:${sc(p.c.global)}18;color:${sc(p.c.global)};border-color:${sc(p.c.global)}40">${sl(p.c.global)}</span></td>
+            ${isA()?`<td><div class="action-btns"><button class="btn-edit" onclick="openEdit(${p.id})">✏️</button><button class="btn-delete" onclick="delPart(${p.id})">🗑</button></div></td>`:''}
+          </tr>`).join('')}
+          ${di.length===0?`<tr><td colspan="8" style="text-align:center;color:#555;padding:30px">Aucun partenaire.</td></tr>`:''}
+        </tbody>
+      </table></div>
     </div>
   `;
 }
 
-function buildPartners(displayed) {
-  return `
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
-      ${[['all','Tous'],['platinum','✦ Platinum'],['gold','★ Gold'],['silver','◆ Silver']].map(([v,l])=>`
-        <button class="filter-btn ${state.filterGrade===v?'active':''}" onclick="setFilter('${v}')">${l}</button>
+function buildPa(di){return `
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap">
+    ${[['all','Tous'],['platinum','✦ Platinum'],['gold','★ Gold'],['silver','◆ Silver']].map(([v,l])=>`<button class="filter-btn ${state.filter===v?'active':''}" onclick="setFilter('${v}')">${l}</button>`).join('')}
+  </div>
+  <div class="partner-cards">
+    ${di.map(p=>{const gs=GRADE_STYLE[p.grade];return `
+      <div class="partner-card" style="border-color:${gs.color}50">
+        <div class="card-top">
+          <div style="display:flex;gap:9px;align-items:center">
+            <div class="avatar" style="width:38px;height:38px;border-radius:50%;background:${gs.color}28;border:2px solid ${gs.color};color:${gs.color};font-size:11px">${p.avatar}</div>
+            <div><div style="font-weight:700;color:#fff;font-size:13px">${p.name}</div><div style="font-size:10px;color:#777">${p.city}</div></div>
+          </div>${ring(p.c.global,42)}
+        </div>
+        ${gbadge(p.grade)}
+        <div class="card-accounts">${PLATFORMS.map(pl=>`<div class="account-row"><div class="account-dot" style="background:${PLATFORM_COLOR[pl]}"></div><span style="color:${p.accounts?.[pl]?'#aaa':'#444'};font-style:${p.accounts?.[pl]?'normal':'italic'}">${pl}: ${p.accounts?.[pl]||'Non renseigné'}</span></div>`).join('')}</div>
+        <div class="platform-scores">${PLATFORMS.map(pl=>`<div class="platform-score-box"><div style="width:6px;height:6px;border-radius:50%;background:${PLATFORM_COLOR[pl]};margin:0 auto 3px"></div><div style="font-size:13px;font-weight:700;color:${sc(p.c.perPlatform[pl])}">${p.c.perPlatform[pl]}</div><div style="font-size:8px;color:#666">${pl.slice(0,2)}</div></div>`).join('')}</div>
+        ${pbar(p.c.global,100)}
+        <div style="display:flex;justify-content:space-between;margin-top:5px;margin-bottom:${isA()?'10':'0'}px"><span style="font-size:9px;color:#666">Conformité</span><span style="font-size:9px;color:${sc(p.c.global)};font-weight:700">${sl(p.c.global)}</span></div>
+        ${isA()?`<div class="card-btns"><button class="btn-edit" style="flex:1;padding:5px" onclick="openEdit(${p.id})">✏️ Éditer</button><button class="btn-delete" style="padding:5px 8px" onclick="delPart(${p.id})">🗑</button></div>`:''}
+      </div>
+    `;}).join('')}
+  </div>
+`}
+
+function buildOb(){return `
+  <div class="obligations-grid">
+    ${['platinum','gold','silver'].map(grade=>{const gs=GRADE_STYLE[grade],ob=state.settings[grade],pl=state.partners.filter(p=>p.grade===grade);return `
+      <div class="obligation-card" style="background:${gs.color}12;border:1px solid ${gs.color}40">
+        <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px"><div style="width:34px;height:34px;border-radius:50%;background:${gs.color}20;border:2px solid ${gs.color};display:flex;align-items:center;justify-content:center;font-size:14px;color:${gs.color}">${gs.icon}</div><div><div style="font-weight:800;font-size:15px;color:${gs.color};text-transform:uppercase">${gs.label}</div><div style="font-size:10px;color:#888">Obligations mensuelles</div></div></div>
+        ${[['📝','Posts',ob.posts_month,'/mois'],['🔁','Reposts',ob.reposts_month,'/mois'],['📤','Republications',ob.republish_month,'/mois'],['🏷️','Tag '+state.settings.brand_tag,'Obligatoire',''],['⭐','Qualité min',ob.quality_min,'/100']].map(([ic,lb,vl,u])=>`<div class="obligation-row"><span style="color:#ccc">${ic} ${lb}</span><span style="font-weight:700;color:${gs.color};font-size:12px">${vl}${u}</span></div>`).join('')}
+        <div style="margin-top:11px;padding:8px 10px;background:rgba(255,255,255,0.04);border-radius:8px"><div style="font-size:9px;color:#888;margin-bottom:5px">Partenaires (${pl.length})</div><div style="display:flex;flex-wrap:wrap;gap:4px">${pl.length===0?`<span style="font-size:10px;color:#555">Aucun</span>`:pl.map(p=>`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:${gs.color}15;border:1px solid ${gs.color}30;color:${gs.color}">${p.name}</span>`).join('')}</div></div>
+      </div>
+    `;}).join('')}
+  </div>
+`}
+
+function buildSe(){const s=state.settings;return `
+  <div class="settings-section"><div class="section-title">🏷️ Tag de marque</div><label>Hashtag / mention obligatoire</label><input type="text" id="brand_tag" value="${s.brand_tag}" style="margin-bottom:10px"></div>
+  ${['platinum','gold','silver'].map(g=>{const gs=GRADE_STYLE[g],ob=s[g];return `
+    <div class="settings-section" style="border-color:${gs.color}40">
+      <div class="section-title" style="color:${gs.color}">${gs.icon} ${gs.label.toUpperCase()}</div>
+      ${[['posts_month','📝 Posts / mois',30],['reposts_month','🔁 Reposts / mois',20],['republish_month','📤 Republications / mois',20],['quality_min','⭐ Qualité minimum',100]].map(([f,l,mx])=>`
+        <div style="margin-bottom:12px"><div class="slider-row"><span style="font-size:12px;color:#ccc">${l}</span><span style="font-weight:700;color:${gs.color}" id="v_${g}_${f}">${ob[f]}</span></div>
+        <input type="range" min="0" max="${mx}" value="${ob[f]}" style="accent-color:${gs.color}" oninput="document.getElementById('v_${g}_${f}').textContent=this.value" data-grade="${g}" data-field="${f}"></div>
       `).join('')}
     </div>
-    <div class="partner-cards">
-      ${displayed.map(p=>{
-        const gs = GRADE_STYLE[p.grade];
-        return `
-          <div class="partner-card" style="border-color:${gs.color}50">
-            <div class="card-top">
-              <div style="display:flex;gap:9px;align-items:center">
-                <div class="avatar" style="width:38px;height:38px;border-radius:50%;background:${gs.color}28;border:2px solid ${gs.color};color:${gs.color};font-size:11px">${p.avatar}</div>
-                <div>
-                  <div style="font-weight:700;color:#fff;font-size:13px">${p.name}</div>
-                  <div style="font-size:10px;color:#777">${p.city}</div>
-                </div>
-              </div>
-              ${scoreRing(p.compliance.global,42)}
-            </div>
-            ${gradeBadge(p.grade)}
-            <div class="card-accounts">
-              ${PLATFORMS.map(pl=>`
-                <div class="account-row">
-                  <div class="account-dot" style="background:${PLATFORM_COLOR[pl]}"></div>
-                  <span style="color:${p.accounts?.[pl]?'#aaa':'#444'};font-style:${p.accounts?.[pl]?'normal':'italic'}">${pl}: ${p.accounts?.[pl]||'Non renseigné'}</span>
-                </div>
-              `).join('')}
-            </div>
-            <div class="platform-scores">
-              ${PLATFORMS.map(pl=>`
-                <div class="platform-score-box">
-                  <div style="width:6px;height:6px;border-radius:50%;background:${PLATFORM_COLOR[pl]};margin:0 auto 3px"></div>
-                  <div style="font-size:13px;font-weight:700;color:${sc(p.compliance.perPlatform[pl])}">${p.compliance.perPlatform[pl]}</div>
-                  <div style="font-size:8px;color:#666">${pl.slice(0,2).toUpperCase()}</div>
-                </div>
-              `).join('')}
-            </div>
-            ${progressBar(p.compliance.global,100)}
-            <div style="display:flex;justify-content:space-between;margin-top:5px;margin-bottom:10px">
-              <span style="font-size:9px;color:#666">Conformité</span>
-              <span style="font-size:9px;color:${sc(p.compliance.global)};font-weight:700">${sl(p.compliance.global)}</span>
-            </div>
-            <div class="card-btns">
-              <button class="btn-edit" style="flex:1;padding:5px" onclick="openEditModal(${p.id})">✏️ Éditer</button>
-              <button class="connect-btn" onclick="connectInstagram(${p.id})">🔗 Connecter</button>
-              <button class="btn-delete" style="padding:5px 8px" onclick="deletePartner(${p.id})">🗑</button>
-            </div>
-          </div>
-        `;
-      }).join('')}
-    </div>
-  `;
-}
+  `;}).join('')}
+  <button class="save-btn" onclick="saveSeForm()">💾 Sauvegarder</button>
+`}
 
-function buildObligations() {
-  return `
-    <div class="obligations-grid">
-      ${['platinum','gold','silver'].map(grade=>{
-        const gs = GRADE_STYLE[grade];
-        const ob = state.settings[grade];
-        const pList = state.partners.filter(p=>p.grade===grade);
-        return `
-          <div class="obligation-card" style="background:${gs.color}12;border:1px solid ${gs.color}40">
-            <div style="display:flex;align-items:center;gap:9px;margin-bottom:14px">
-              <div style="width:34px;height:34px;border-radius:50%;background:${gs.color}20;border:2px solid ${gs.color};display:flex;align-items:center;justify-content:center;font-size:14px;color:${gs.color}">${gs.icon}</div>
-              <div>
-                <div style="font-weight:800;font-size:15px;color:${gs.color};text-transform:uppercase">${gs.label}</div>
-                <div style="font-size:10px;color:#888">Obligations mensuelles</div>
-              </div>
-            </div>
-            ${[['📝','Posts originaux',ob.posts_month,'/mois'],['🔁','Reposts',ob.reposts_month,'/mois'],['📤','Republications',ob.republish_month,'/mois'],['🏷️','Tag '+state.settings.brand_tag,'Obligatoire',''],['⭐','Qualité minimum',ob.quality_min,'/100']].map(([ic,lb,vl,u])=>`
-              <div class="obligation-row">
-                <span style="color:#ccc">${ic} ${lb}</span>
-                <span style="font-weight:700;color:${gs.color};font-size:12px">${vl}${u}</span>
-              </div>
-            `).join('')}
-            <div style="margin-top:11px;padding:8px 10px;background:rgba(255,255,255,0.04);border-radius:8px">
-              <div style="font-size:9px;color:#888;margin-bottom:5px;text-transform:uppercase;letter-spacing:0.08em">Partenaires (${pList.length})</div>
-              <div style="display:flex;flex-wrap:wrap;gap:4px">
-                ${pList.length===0?`<span style="font-size:10px;color:#555">Aucun</span>`:pList.map(p=>`<span style="font-size:10px;padding:2px 7px;border-radius:20px;background:${gs.color}15;border:1px solid ${gs.color}30;color:${gs.color}">${p.name}</span>`).join('')}
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('')}
+function buildUs(){return `
+  <div class="settings-section">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <div class="section-title" style="margin-bottom:0">👥 Gestion des utilisateurs</div>
+      <button class="add-btn" onclick="openAddU()">+ Utilisateur</button>
     </div>
-  `;
-}
-
-function buildSettings() {
-  const s = state.settings;
-  return `
-    <div class="settings-section">
-      <div class="section-title">🏷️ Tag de marque obligatoire</div>
-      <label>Hashtag / mention sur tous les posts</label>
-      <input type="text" id="brand_tag" value="${s.brand_tag}" style="margin-bottom:10px">
+    <table class="users-table">
+      <thead><tr><th>Identifiant</th><th>Rôle</th><th>Partenaire lié</th><th>Action</th></tr></thead>
+      <tbody>${state.users.map(u=>{const lk=u.partnerId?state.partners.find(p=>p.id===u.partnerId):null;const rc=u.role==='admin'?'role-admin':u.role==='viewer'?'role-viewer':'role-partner';return `
+        <tr><td style="color:#fff;font-weight:600">${u.username}</td><td><span class="role-badge ${rc}">${u.role}</span></td><td style="color:#888">${lk?lk.name:'—'}</td>
+        <td>${u.id!==1?`<button class="btn-delete" onclick="delUser(${u.id})">🗑</button>`:`<span style="color:#555;font-size:11px">Principal</span>`}</td></tr>
+      `;}).join('')}</tbody>
+    </table>
+    <div style="margin-top:14px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px;font-size:11px;color:#666">
+      <div style="color:#888;font-weight:600;margin-bottom:6px">Rôles</div>
+      <div>👑 <span style="color:#d4a800">admin</span> — Accès complet</div>
+      <div style="margin-top:3px">👁️ <span style="color:#818cf8">viewer</span> — Vue générale, lecture seule</div>
+      <div style="margin-top:3px">🏪 <span style="color:#22c55e">partner</span> — Ses propres stats uniquement</div>
     </div>
-    ${['platinum','gold','silver'].map(grade=>{
-      const gs = GRADE_STYLE[grade];
-      const ob = s[grade];
-      return `
-        <div class="settings-section" style="border-color:${gs.color}40">
-          <div class="section-title" style="color:${gs.color}">${gs.icon} ${gs.label.toUpperCase()}</div>
-          ${[['posts_month','📝 Posts originaux / mois',30],['reposts_month','🔁 Reposts / mois',20],['republish_month','📤 Republications / mois',20],['quality_min','⭐ Score qualité minimum',100]].map(([field,label,max])=>`
-            <div style="margin-bottom:12px">
-              <div class="slider-row">
-                <span style="font-size:12px;color:#ccc">${label}</span>
-                <span style="font-weight:700;color:${gs.color};font-size:13px" id="val_${grade}_${field}">${ob[field]}</span>
-              </div>
-              <input type="range" min="0" max="${max}" value="${ob[field]}" style="accent-color:${gs.color}"
-                oninput="document.getElementById('val_${grade}_${field}').textContent=this.value"
-                data-grade="${grade}" data-field="${field}">
-            </div>
-          `).join('')}
-        </div>
-      `;
-    }).join('')}
-    <button class="save-btn" onclick="saveSettingsFromForm()">💾 Sauvegarder les paramètres</button>
-  `;
-}
+  </div>
+`}
 
-function buildEditModal() {
-  const p = state.partners.find(x=>x.id===state.editingPartner);
-  if (!p) return '';
-  const ob = state.settings[p.grade];
+function buildEditM(){
+  const p=state.partners.find(x=>x.id===state.editId);if(!p)return'';
+  const ob=state.settings[p.grade];
   return `
-    <div class="modal-overlay" onclick="closeModal()">
-      <div class="modal" onclick="event.stopPropagation()">
-        <div class="modal-header">
-          <div class="modal-title">✏️ Éditer ${p.name}</div>
-          <button class="close-btn" onclick="closeModal()">✕</button>
+    <div class="modal-overlay" onclick="closeM()"><div class="modal" onclick="event.stopPropagation()">
+      <div class="modal-header"><div class="modal-title">✏️ Éditer ${p.name}</div><button class="close-btn" onclick="closeM()">✕</button></div>
+      <div class="section"><div class="section-title">Informations</div>
+        <label>Nom</label><input type="text" id="en" value="${p.name}">
+        <label>Ville</label><input type="text" id="ec" value="${p.city}">
+        <label>Grade</label><div class="grade-btns">
+          ${['silver','gold','platinum'].map(g=>`<button class="grade-select-btn" id="eg_${g}" onclick="selG('${g}')" style="border-color:${p.grade===g?GRADE_STYLE[g].color:'rgba(255,255,255,0.1)'};background:${p.grade===g?GRADE_STYLE[g].color+'20':'transparent'};color:${p.grade===g?GRADE_STYLE[g].color:'#666'}">${GRADE_STYLE[g].icon} ${GRADE_STYLE[g].label}</button>`).join('')}
         </div>
-        <div class="section">
-          <div class="section-title">Informations générales</div>
-          <label>Nom</label><input type="text" id="edit_name" value="${p.name}">
-          <label>Ville</label><input type="text" id="edit_city" value="${p.city}">
-          <label>Grade</label>
-          <div class="grade-btns">
-            ${['silver','gold','platinum'].map(g=>`
-              <button class="grade-select-btn" id="grade_${g}" onclick="selectGrade('${g}')"
-                style="border-color:${p.grade===g?GRADE_STYLE[g].color:'rgba(255,255,255,0.1)'};background:${p.grade===g?GRADE_STYLE[g].color+'20':'transparent'};color:${p.grade===g?GRADE_STYLE[g].color:'#666'}">
-                ${GRADE_STYLE[g].icon} ${GRADE_STYLE[g].label}
-              </button>
-            `).join('')}
-          </div>
-        </div>
-        <div class="section">
-          <div class="section-title">Comptes sociaux</div>
-          ${PLATFORMS.map(pl=>`
-            <label style="color:${PLATFORM_COLOR[pl]}">${pl}</label>
-            <input type="text" id="acc_${pl}" value="${p.accounts?.[pl]||''}" placeholder="${pl==='Facebook'?'Nom de la page':'@nomducompte'}">
-          `).join('')}
-          <div style="font-size:11px;color:#666;margin-top:8px">Tag obligatoire : <span style="color:#d4a800">${state.settings.brand_tag}</span></div>
-          <button class="connect-btn" style="margin-top:10px" onclick="connectInstagram(${p.id})">🔗 Connecter Instagram/Facebook</button>
-        </div>
-        <div class="section-title" style="margin-bottom:10px">Métriques du mois</div>
-        <p style="font-size:11px;color:#888;margin-bottom:12px">Seuils · ${ob.posts_month} posts · ${ob.reposts_month} reposts · ${ob.republish_month} repub. · Qualité ≥${ob.quality_min}</p>
-        ${PLATFORMS.map(pl=>`
-          <div class="section" style="margin-bottom:10px">
-            <div class="platform-title" style="color:${PLATFORM_COLOR[pl]}">● ${pl}</div>
-            <div class="metrics-grid">
-              ${[['posts','Posts',ob.posts_month],['reposts','Reposts',ob.reposts_month],['republish','Repub.',ob.republish_month],['tagged','Tagués',ob.posts_month],['quality','Qualité',100]].map(([f,l,mx])=>`
-                <div>
-                  <div style="font-size:10px;color:#777;margin-bottom:4px">${l}</div>
-                  <input type="number" id="m_${pl}_${f}" min="0" max="${f==='quality'?100:50}" value="${p.metrics[pl][f]}">
-                  ${progressBar(p.metrics[pl][f],mx)}
-                </div>
-              `).join('')}
-            </div>
-          </div>
-        `).join('')}
-        <button class="save-btn" onclick="submitEditModal(${p.id})">💾 Enregistrer</button>
-        <button class="cancel-btn" onclick="closeModal()">Annuler</button>
       </div>
-    </div>
-  `;
-}
-
-function buildAddModal() {
-  return `
-    <div class="modal-overlay" onclick="closeModal()">
-      <div class="modal" onclick="event.stopPropagation()" style="max-width:420px">
-        <div class="modal-header">
-          <div class="modal-title">Nouveau Partenaire</div>
-          <button class="close-btn" onclick="closeModal()">✕</button>
-        </div>
-        <label>Nom du restaurant *</label><input type="text" id="add_name" placeholder="Ex: Le Sultan">
-        <label>Ville</label><input type="text" id="add_city" placeholder="Ex: Paris 18e">
-        <label>Grade</label>
-        <div class="grade-btns" id="add_grade_btns">
-          ${['silver','gold','platinum'].map((g,i)=>`
-            <button class="grade-select-btn" id="addgrade_${g}" onclick="selectAddGrade('${g}')"
-              style="border-color:${i===0?GRADE_STYLE[g].color:'rgba(255,255,255,0.1)'};background:${i===0?GRADE_STYLE[g].color+'20':'transparent'};color:${i===0?GRADE_STYLE[g].color:'#666'}">
-              ${GRADE_STYLE[g].icon} ${GRADE_STYLE[g].label}
-            </button>
-          `).join('')}
-        </div>
-        <div style="margin-top:14px">
-          <div class="section-title">Comptes sociaux</div>
-          ${PLATFORMS.map(pl=>`
-            <label style="color:${PLATFORM_COLOR[pl]}">${pl}</label>
-            <input type="text" id="add_acc_${pl}" placeholder="${pl==='Facebook'?'Nom de la page':'@nomducompte'}">
-          `).join('')}
-          <div style="font-size:11px;color:#666;margin-top:8px">Tag obligatoire : <span style="color:#d4a800">${state.settings.brand_tag}</span></div>
-        </div>
-        <button class="save-btn" onclick="submitAddModal()">Ajouter le partenaire</button>
-        <button class="cancel-btn" onclick="closeModal()">Annuler</button>
+      <div class="section"><div class="section-title">Comptes sociaux</div>
+        ${PLATFORMS.map(pl=>`<label style="color:${PLATFORM_COLOR[pl]}">${pl}</label><input type="text" id="ea_${pl}" value="${p.accounts?.[pl]||''}" placeholder="${pl==='Facebook'?'Nom page':'@compte'}">`).join('')}
       </div>
-    </div>
+      <div class="section-title" style="margin-bottom:10px">Métriques · Seuils: ${ob.posts_month}p · ${ob.reposts_month}r · ${ob.republish_month}rb · Q≥${ob.quality_min}</div>
+      ${PLATFORMS.map(pl=>`
+        <div class="section" style="margin-bottom:10px">
+          <div class="platform-title" style="color:${PLATFORM_COLOR[pl]}">● ${pl}</div>
+          <div class="metrics-grid">
+            ${[['posts','Posts',ob.posts_month],['reposts','Rep',ob.reposts_month],['republish','Rpub',ob.republish_month],['tagged','Tag',ob.posts_month],['quality','Qual',100]].map(([f,l,mx])=>`<div><div style="font-size:10px;color:#777;margin-bottom:4px">${l}</div><input type="number" id="em_${pl}_${f}" min="0" max="${f==='quality'?100:50}" value="${p.metrics[pl][f]}">${pbar(p.metrics[pl][f],mx)}</div>`).join('')}
+          </div>
+        </div>
+      `).join('')}
+      <button class="save-btn" onclick="subEdit(${p.id})">💾 Enregistrer</button>
+      <button class="cancel-btn" onclick="closeM()">Annuler</button>
+    </div></div>
   `;
 }
 
-// ── EVENT HANDLERS ────────────────────────────────────────────────────────────
-let currentEditGrade = '';
-let currentAddGrade = 'silver';
+function buildAddM(){return `
+  <div class="modal-overlay" onclick="closeM()"><div class="modal" onclick="event.stopPropagation()" style="max-width:420px">
+    <div class="modal-header"><div class="modal-title">Nouveau Partenaire</div><button class="close-btn" onclick="closeM()">✕</button></div>
+    <label>Nom *</label><input type="text" id="an" placeholder="Ex: Le Sultan">
+    <label>Ville</label><input type="text" id="ac" placeholder="Ex: Paris 18e">
+    <label>Grade</label><div class="grade-btns">
+      ${['silver','gold','platinum'].map((g,i)=>`<button class="grade-select-btn" id="ag_${g}" onclick="selAG('${g}')" style="border-color:${i===0?GRADE_STYLE[g].color:'rgba(255,255,255,0.1)'};background:${i===0?GRADE_STYLE[g].color+'20':'transparent'};color:${i===0?GRADE_STYLE[g].color:'#666'}">${GRADE_STYLE[g].icon} ${GRADE_STYLE[g].label}</button>`).join('')}
+    </div>
+    <div style="margin-top:14px"><div class="section-title">Comptes sociaux</div>
+      ${PLATFORMS.map(pl=>`<label style="color:${PLATFORM_COLOR[pl]}">${pl}</label><input type="text" id="aa_${pl}" placeholder="${pl==='Facebook'?'Nom page':'@compte'}">`).join('')}
+    </div>
+    <button class="save-btn" onclick="subAdd()">Ajouter</button>
+    <button class="cancel-btn" onclick="closeM()">Annuler</button>
+  </div></div>
+`}
 
-function bindEvents() {}
+function buildAddUM(){return `
+  <div class="modal-overlay" onclick="closeM()"><div class="modal" onclick="event.stopPropagation()" style="max-width:420px">
+    <div class="modal-header"><div class="modal-title">Nouvel Utilisateur</div><button class="close-btn" onclick="closeM()">✕</button></div>
+    <label>Identifiant *</label><input type="text" id="uu" placeholder="Ex: sultan_grill">
+    <label>Mot de passe *</label><input type="password" id="up">
+    <label>Rôle</label>
+    <select id="ur"><option value="viewer">👁️ Viewer — Vue générale (lecture seule)</option><option value="partner">🏪 Partner — Ses propres stats</option><option value="admin">👑 Admin — Accès complet</option></select>
+    <label>Partenaire lié (si rôle Partner)</label>
+    <select id="upid"><option value="">— Aucun —</option>${state.partners.map(p=>`<option value="${p.id}">${p.name}</option>`).join('')}</select>
+    <button class="save-btn" onclick="subAddU()">Créer</button>
+    <button class="cancel-btn" onclick="closeM()">Annuler</button>
+  </div></div>
+`}
 
-function setTab(t) { state.tab = t; render(); }
-function setFilter(f) { state.filterGrade = f; render(); }
-
-function openAddModal() { currentAddGrade = 'silver'; state.modal = 'add'; render(); }
-function openEditModal(id) {
-  const p = state.partners.find(x=>x.id===id);
-  currentEditGrade = p.grade;
-  state.editingPartner = id;
-  state.modal = 'edit';
-  render();
+let cEG='',cAG='silver';
+function bindEv(){}
+function setTab(t){state.tab=t;render();}
+function setFilter(f){state.filter=f;render();}
+function openEdit(id){const p=state.partners.find(x=>x.id===id);cEG=p.grade;state.editId=id;state.modal='edit';render();}
+function openAdd(){cAG='silver';state.modal='add';render();}
+function openAddU(){state.modal='adduser';render();}
+function doLogin(){const u=document.getElementById('lu')?.value,p=document.getElementById('lp')?.value;if(u&&p)login(u,p);}
+function selG(g){cEG=g;['silver','gold','platinum'].forEach(x=>{const b=document.getElementById('eg_'+x);if(!b)return;b.style.borderColor=x===g?GRADE_STYLE[x].color:'rgba(255,255,255,0.1)';b.style.background=x===g?GRADE_STYLE[x].color+'20':'transparent';b.style.color=x===g?GRADE_STYLE[x].color:'#666';});}
+function selAG(g){cAG=g;['silver','gold','platinum'].forEach(x=>{const b=document.getElementById('ag_'+x);if(!b)return;b.style.borderColor=x===g?GRADE_STYLE[x].color:'rgba(255,255,255,0.1)';b.style.background=x===g?GRADE_STYLE[x].color+'20':'transparent';b.style.color=x===g?GRADE_STYLE[x].color:'#666';});}
+function subEdit(id){
+  const p=state.partners.find(x=>x.id===id);
+  const n=document.getElementById('en').value,c=document.getElementById('ec').value;
+  const acc={},met={};
+  PLATFORMS.forEach(pl=>{acc[pl]=document.getElementById('ea_'+pl).value;met[pl]={};['posts','reposts','republish','tagged','quality'].forEach(f=>{met[pl][f]=parseInt(document.getElementById('em_'+pl+'_'+f).value)||0;});});
+  savePart(id,{...p,name:n,city:c,grade:cEG,avatar:n.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(),accounts:acc,metrics:met});
 }
-
-function selectGrade(g) {
-  currentEditGrade = g;
-  ['silver','gold','platinum'].forEach(x=>{
-    const btn = document.getElementById('grade_'+x);
-    if (!btn) return;
-    btn.style.borderColor = x===g ? GRADE_STYLE[x].color : 'rgba(255,255,255,0.1)';
-    btn.style.background  = x===g ? GRADE_STYLE[x].color+'20' : 'transparent';
-    btn.style.color       = x===g ? GRADE_STYLE[x].color : '#666';
-  });
+function subAdd(){
+  const n=document.getElementById('an').value;if(!n.trim()){alert('Nom obligatoire');return;}
+  const c=document.getElementById('ac').value,acc={};
+  PLATFORMS.forEach(pl=>{acc[pl]=document.getElementById('aa_'+pl).value;});
+  addPart({name:n.trim(),city:c.trim(),grade:cAG,avatar:n.trim().split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(),joined:new Date().toISOString().slice(0,7),accounts:acc,metrics:Object.fromEntries(PLATFORMS.map(p=>[p,{posts:0,reposts:0,republish:0,tagged:0,quality:0}]))});
 }
-
-function selectAddGrade(g) {
-  currentAddGrade = g;
-  ['silver','gold','platinum'].forEach(x=>{
-    const btn = document.getElementById('addgrade_'+x);
-    if (!btn) return;
-    btn.style.borderColor = x===g ? GRADE_STYLE[x].color : 'rgba(255,255,255,0.1)';
-    btn.style.background  = x===g ? GRADE_STYLE[x].color+'20' : 'transparent';
-    btn.style.color       = x===g ? GRADE_STYLE[x].color : '#666';
-  });
+function subAddU(){
+  const u=document.getElementById('uu').value.trim(),pw=document.getElementById('up').value,r=document.getElementById('ur').value,pid=document.getElementById('upid').value;
+  if(!u||!pw){alert('Identifiant et mot de passe obligatoires');return;}
+  addUser({username:u,password:pw,role:r,partnerId:pid?parseInt(pid):null});
 }
-
-function submitEditModal(id) {
-  const p = state.partners.find(x=>x.id===id);
-  const name = document.getElementById('edit_name').value;
-  const city = document.getElementById('edit_city').value;
-  const accounts = {};
-  const metrics = {};
-  PLATFORMS.forEach(pl=>{
-    accounts[pl] = document.getElementById('acc_'+pl).value;
-    metrics[pl] = {};
-    ['posts','reposts','republish','tagged','quality'].forEach(f=>{
-      metrics[pl][f] = parseInt(document.getElementById('m_'+pl+'_'+f).value)||0;
-    });
-  });
-  savePartner(id, { ...p, name, city, grade: currentEditGrade, avatar: name.split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(), accounts, metrics });
+function saveSeForm(){
+  const ns={...state.settings};ns.brand_tag=document.getElementById('brand_tag').value;
+  ['platinum','gold','silver'].forEach(g=>{['posts_month','reposts_month','republish_month','quality_min'].forEach(f=>{const el=document.querySelector(`input[data-grade="${g}"][data-field="${f}"]`);if(el)ns[g][f]=parseInt(el.value)||0;});});
+  saveSett(ns);
 }
-
-function submitAddModal() {
-  const name = document.getElementById('add_name').value;
-  if (!name.trim()) { alert('Le nom est obligatoire'); return; }
-  const city = document.getElementById('add_city').value;
-  const accounts = {};
-  PLATFORMS.forEach(pl=>{ accounts[pl] = document.getElementById('add_acc_'+pl).value; });
-  addPartner({
-    name: name.trim(), city: city.trim(), grade: currentAddGrade,
-    avatar: name.trim().split(' ').map(w=>w[0]).join('').slice(0,2).toUpperCase(),
-    joined: new Date().toISOString().slice(0,7), accounts,
-    metrics: Object.fromEntries(PLATFORMS.map(p=>[p,{posts:0,reposts:0,republish:0,tagged:0,quality:0}]))
-  });
-}
-
-function saveSettingsFromForm() {
-  const newSettings = { ...state.settings };
-  newSettings.brand_tag = document.getElementById('brand_tag').value;
-  ['platinum','gold','silver'].forEach(grade=>{
-    ['posts_month','reposts_month','republish_month','quality_min'].forEach(field=>{
-      const el = document.querySelector(`input[data-grade="${grade}"][data-field="${field}"]`);
-      if (el) newSettings[grade][field] = parseInt(el.value)||0;
-    });
-  });
-  saveSettings(newSettings);
-}
-
-// ── INIT ──────────────────────────────────────────────────────────────────────
-loadData();
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&!state.auth)doLogin();});
+if(state.auth){loadData();}else{render();}
 </script>
 </body>
 </html>
